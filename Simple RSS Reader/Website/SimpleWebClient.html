@@ -1,0 +1,1622 @@
+﻿<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <title>Simple Web CLient</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Simple Web Client">
+    <meta name="author" content="Chad Stewart: chad.stewart@gatech.edu">
+
+    <!--Scripts-->
+    <script src="./Scripts/jquery.js"></script>
+    <script src="./Scripts/knockout-latest.js" type="text/javascript"></script>
+
+    <!--Styles-->
+    <link href="./Styles/bootstrap.css" rel="stylesheet">
+    <link href="./Styles/bootstrap-select.css" rel="stylesheet">
+    <link href="./Styles/custom.css" rel="stylesheet">
+    <link href="./Styles/bootstrap-responsive.css" rel="stylesheet">
+</head>
+<!-- ReSharper disable UnknownCssClass -->
+
+<body>
+    <!--Main component (contains all others)-->
+    <div class="container">
+        <!--Top Nav Bar-->
+        <div>
+            <h3 class="muted">Service Onboarding Tool</h3>
+
+            <!--Top Navigation Bar-->
+            <div class="navbar">
+                <div class="navbar-inner">
+                    <div class="container">
+                        <ul class="nav">
+                            <li id="sps-nav" data-bind="click: $root.changeView.bind($data, 0), css: { active: views()[0] }"><a>Service Plans</a></li>
+                            <li id="skus-nav" data-bind="click: $root.changeView.bind($data, 1), css: { active: views()[1] }"><a>Stock Keeping Units</a></li>
+                            <li id="sts-nav" data-bind="click: $root.changeView.bind($data, 2), css: { active: views()[2] }"><a>Service Principal Templates</a></li>
+                            <li id="new-nav" class="dropdown" data-bind="css: { active: views()[3] || views()[4] || views()[5] }">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">New<b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+                                    <li data-bind="click: $root.changeView.bind($data, 3)"><a href="#">Service Plan</a></li>
+                                    <li data-bind="click: $root.changeView.bind($data, 4)"><a href="#">Sku</a></li>
+                                    <li data-bind="click: $root.changeView.bind($data, 5)"><a href="#">Service Type</a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <!--/navbar-->
+        </div>
+        <!--Service Plans Page-->
+        <div class="row-fluid" data-bind="visible: views()[0]">
+            <!--Side navbar-->
+            <div class="span4" data-bind="visible: !loading()">
+                <div class="well sidebar-nav">
+                    <p class="label">Service Type</p>
+                    <!--This is come complete and utter magic-->
+                    <div class="accordion" id="SPsAccordion" data-bind="foreach: ServiceTypes">
+                        <div class="accordion-group">
+                            <div class="nav-header">
+                                <a class="accordion-toggle" data-toggle="collapse" data-parent="#SPsAccordion" data-bind="text: ServiceType, attr: { href: $root.generateAccordionLink('SPsAccordion', ServiceType) }"></a>
+                            </div>
+
+                            <div class="accordion-body collapse" data-bind="attr: { id: $root.generateAccordionId('SPsAccordion', ServiceType) }">
+
+                                <div class="accordion-inner">
+                                    <ul class="nav nav-list font10" data-bind="foreach: $root.servicePlans">
+                                        <!-- ko if: $data.ServiceType.toLowerCase() == $parent.ServiceType.toLowerCase() -->
+                                        <li><a href="#" data-bind="text: ServicePlanName, click: $root.updateServicePlanView"></a></li>
+                                        <!-- /ko -->
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!--/Complete and Utter Magic-->
+                </div>
+                <div class="row-fluid">
+                    <input type="text" class="search-query" placeholder="Search Plan Names "
+                        data-bind="visible: !ServicePlanRegexSearchVisible(), typeahead: { target: DisplayedPlan, source: servicePlans }, typeaheadText: 'ServicePlanName'">
+                    <input type="text" class="search-query" placeholder="Search Plan Names by Regex"
+                        data-bind="visible: ServicePlanRegexSearchVisible, ServicePlanRegex: { target: ServicePlanRegexSearch, source: servicePlans }, displayText: 'ServicePlanName'">
+                    <label class="checkbox" style="padding-top: 5px; padding-left: 50px;">
+                        <input type="checkbox" data-bind="checked: ServicePlanRegexSearchVisible" />
+                        Search using Regex
+                    </label>
+                </div>
+            </div>
+            <!--/side navbar-->
+            <!-- Loading Animation -->
+            <div data-bind="visible: loading">
+                <p id="loading-text">Loading...</p>
+                <div id="page-wrap">
+                    <div id="loading">
+                        <span></span>
+                    </div>
+                </div>
+            </div>
+            <!-- /Loading Animation -->
+            <!--Service Plan View Page-->
+            <div class="span8">
+                <!-- Multiview -->
+                <div id="ServicePlanCarousel" class="carousel slide" data-bind="visible: DisplayPlans">
+                    <ol class="carousel-indicators" data-bind="visible: ServicePlanRegexSearch()[1], foreach: ServicePlanRegexSearch">
+                        <!-- ko if: $index() == 0 -->
+                        <li class="active" data-bind="click: $root.slideToPlan.bind($data, $index())"></li>
+                        <!-- /ko -->
+                        <!-- ko if: $index() != 0 -->
+                        <li data-bind="click: $root.slideToPlan.bind($data, $index())"></li>
+                        <!-- /ko -->
+                    </ol>
+                    <!-- Carousel items -->
+                    <div class="carousel-inner" data-bind="foreach: ServicePlanRegexSearch">
+                        <!-- ko if: $index() == 0 -->
+                        <div class="active item">
+                            <div class="hero-unit">
+                                <h2 data-bind="text: $data.ServicePlanName"></h2>
+                                <div class="row-fluid">
+                                    <div class="span1"></div>
+                                    <div class="span2">
+                                        <span class="label spec-label">Service Type:</span>
+                                    </div>
+                                    <div class="span9">
+                                        <span class="muted guid" data-bind="text: $data.ServiceType"></span>
+                                    </div>
+                                </div>
+
+                                <div class="row-fluid">
+                                    <div class="span1"></div>
+                                    <div class="span2">
+                                        <span class="label spec-label">Object Id:</span>
+                                    </div>
+                                    <div class="span9">
+                                        <span class="muted guid" data-bind="text: $data.ObjectId"></span>
+                                    </div>
+                                </div>
+                                <div class="row-fluid">
+                                    <div class="span1"></div>
+                                    <div class="span2">
+                                        <span class="label spec-label">Plan Id:</span>
+                                    </div>
+                                    <div class="span9">
+                                        <span class="muted guid" data-bind="text: $data.PlanId"></span>
+                                    </div>
+                                </div>
+                                <div class="row-fluid">
+                                    <div class="span1"></div>
+                                    <div class="span2">
+                                        <span class="label spec-label">Capability:</span>
+                                    </div>
+                                    <div class="span9">
+                                        <p class="muted guid" style="padding-top: 7px; line-height: 12px;" data-bind="text: $data.Capability"></p>
+                                    </div>
+                                </div>
+                                <div class="row-fluid">
+                                    <div class="span1"></div>
+                                    <div class="span2">
+                                        <span class="label spec-label">License Type:</span>
+                                    </div>
+                                    <div class="span9">
+                                        <span class="muted guid" data-bind="text: $data.LicenseType"></span>
+                                    </div>
+                                </div>
+                                <div class="row-fluid">
+                                    <div class="span1"></div>
+                                    <div class="span2">
+                                        <span class="label spec-label">Target Class:</span>
+                                    </div>
+                                    <div class="span9">
+                                        <span class="muted guid" data-bind="text: $root.formatTargetClass($data.TargetClass)" />
+                                    </div>
+                                </div>
+                                <div class="row-fluid">
+                                    <div class="span1"></div>
+                                    <div class="span5">
+                                        <span class="label">Prohibited Locations:</span>
+                                        <div class="well list-nav guid muted" style="max-height: 150px; height: 150px; padding: 3px;">
+                                            <ul class="nav nav-list" data-bind="foreach: $data.ProhibitedLocations">
+                                                <li style="line-height: 12px;"><span data-bind="text: $root.generateCountryText($data)"></span></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    <div class="span5">
+                                        <span class="label">Restricted Locations:</span>
+                                        <div class="well list-nav guid muted" style="max-height: 150px; height: 150px; padding: 3px;">
+                                            <ul class="nav nav-list" data-bind="foreach: $data.RestrictedLocations">
+                                                <li style="line-height: 12px;"><span data-bind="text: $root.generateCountryText($data)"></span></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row-fluid">
+                                    <div class="span1"></div>
+                                    <div class="span10">
+                                        <span class="label">Depends on Service Plans:</span>
+                                        <div class="well list-nav guid muted" style="max-height: 100px; height: 100px; padding: 3px;">
+                                            <ul class="nav nav-list" data-bind="foreach: $data.DependsOnServicePlanIds">
+                                                <li style="line-height: 12px;"><span data-bind="text: $data"></span></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                                <hr>
+                                <div>
+                                    <a class="btn btn-primary pull-right" data-bind="click: $root.editSelectedPlan">Edit &raquo;</a>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- /ko -->
+                        <!-- ko if: $index() != 0 -->
+                        <div class="item">
+                            <div class="hero-unit">
+                                <h2 data-bind="text: $data.ServicePlanName"></h2>
+                                <div class="row-fluid">
+                                    <div class="span1"></div>
+                                    <div class="span2">
+                                        <span class="label spec-label">Service Type:</span>
+                                    </div>
+                                    <div class="span9">
+                                        <span class="muted guid" data-bind="text: $data.ServiceType"></span>
+                                    </div>
+                                </div>
+                                <div class="row-fluid">
+                                    <div class="span1"></div>
+                                    <div class="span2">
+                                        <span class="label spec-label">Object Id:</span>
+                                    </div>
+                                    <div class="span9">
+                                        <span class="muted guid" data-bind="text: $data.ObjectId"></span>
+                                    </div>
+                                </div>
+                                <div class="row-fluid">
+                                    <div class="span1"></div>
+                                    <div class="span2">
+                                        <span class="label spec-label">Plan Id:</span>
+                                    </div>
+                                    <div class="span9">
+                                        <span class="muted guid" data-bind="text: $data.PlanId"></span>
+                                    </div>
+                                </div>
+                                <div class="row-fluid">
+                                    <div class="span1"></div>
+                                    <div class="span2">
+                                        <span class="label spec-label">Capability:</span>
+                                    </div>
+                                    <div class="span9">
+                                        <p class="muted guid" style="padding-top: 7px; line-height: 12px;" data-bind="text: $data.Capability" />
+                                    </div>
+                                </div>
+                                <div class="row-fluid">
+                                    <div class="span1"></div>
+                                    <div class="span2">
+                                        <span class="label spec-label">License Type:</span>
+                                    </div>
+                                    <div class="span9">
+                                        <span class="muted guid" data-bind="text: $data.LicenseType" />
+                                    </div>
+                                </div>
+                                <div class="row-fluid">
+                                    <div class="span1"></div>
+                                    <div class="span2">
+                                        <span class="label spec-label">Target Class:</span>
+                                    </div>
+                                    <div class="span9">
+                                        <span class="muted guid" data-bind="text: $root.formatTargetClass($data.TargetClass)" />
+                                    </div>
+                                </div>
+                                <div class="row-fluid">
+                                    <div class="span1"></div>
+                                    <div class="span5">
+                                        <span class="label">Prohibited Locations:</span>
+                                        <div class="well list-nav guid muted" style="max-height: 150px; height: 150px; padding: 3px;">
+                                            <ul class="nav nav-list" data-bind="foreach: $data.ProhibitedLocations">
+                                                <li style="line-height: 12px;"><span data-bind="text: $root.generateCountryText($data)"></span></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    <div class="span5">
+                                        <span class="label">Restricted Locations:</span>
+                                        <div class="well list-nav guid muted" style="max-height: 150px; height: 150px; padding: 3px;">
+                                            <ul class="nav nav-list" data-bind="foreach: $data.RestrictedLocations">
+                                                <li style="line-height: 12px;"><span data-bind="text: $root.generateCountryText($data)"></span></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row-fluid">
+                                    <div class="span1"></div>
+                                    <div class="span10">
+                                        <span class="label">Depends on Service Plans:</span>
+                                        <div class="well list-nav guid muted" style="max-height: 100px; height: 100px; padding: 3px;">
+                                            <ul class="nav nav-list" data-bind="foreach: $data.DependsOnServicePlanIds">
+                                                <li style="line-height: 12px;"><span data-bind="text: $data"></span></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                                <hr>
+                                <div>
+                                    <a href="#" class="btn btn-primary pull-right" data-bind="click: $root.editSelectedPlan.bind($data)">Edit &raquo;</a>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- /ko -->
+                    </div>
+                    <!-- Carousel nav -->
+                    <a class="carousel-control left" href="#ServicePlanCarousel" data-slide="prev" data-bind="visible: ServicePlanRegexSearch()[1]">&lsaquo;</a>
+                    <a class="carousel-control right" href="#ServicePlanCarousel" data-slide="next" data-bind="visible: ServicePlanRegexSearch()[1]">&rsaquo;</a>
+                </div>
+                <!-- Single View -->
+                <div class="hero-unit" data-bind="visible: DisplayedPlan().ServicePlanName">
+                    <h2 id="SPMainLabel" data-bind="text: DisplayedPlan().ServicePlanName"></h2>
+                    <div class="row-fluid">
+                        <div class="span2">
+                            <span class="label spec-label">Plan Name:</span>
+                        </div>
+                        <div class="span4">
+                            <input type="text" class="input-block-level" data-bind="value: ServicePlanNameInput, attr: { placeholder: DisplayedPlan().ServicePlanName }" />
+                        </div>
+                        <div class="span2">
+                            <span class="label spec-label">Service Type:</span>
+                        </div>
+                        <div class="span4">
+                            <span class="muted guid" data-bind="text: DisplayedPlan().ServiceType"></span>
+                        </div>
+                    </div>
+                    <div class="row-fluid">
+                        <div class="span2">
+                            <span class="label spec-label">Object Id:</span>
+                        </div>
+                        <div class="span10">
+                            <span class="muted guid" data-bind="text: DisplayedPlan().ObjectId"></span>
+                        </div>
+                    </div>
+                    <div class="row-fluid">
+                        <div class="span2">
+                            <span class="label spec-label">Plan Id:</span>
+                        </div>
+                        <div class="span10">
+                            <span class="muted guid" data-bind="text: DisplayedPlan().PlanId"></span>
+                        </div>
+                    </div>
+                    <div class="row-fluid">
+                        <div class="span2">
+                            <p class="label spec-label">Capability:</p>
+                        </div>
+                        <div class="span10">
+                            <p class="muted guid" style="padding-top: 7px; line-height: 12px;" data-bind="text: DisplayedPlan().Capability" />
+                        </div>
+                    </div>
+                    <div class="row-fluid">
+                        <div class="span5">
+                            <div>
+                                <span class="label sp-labels">License Type:</span>
+                                <span class="muted pull-right guid" data-bind="text: DisplayedPlan().LicenseType"></span>
+                            </div>
+                            <select id="SPLicenseSelect" class="selectpicker show-tick guid" onchange="toggleSPLicenseAddOnInput(this)" data-bind="options: ServicePlanLicenseTypes"></select>
+                            <input type="text" class="input-block-level" data-bind="value: ServicePlanLicenseTypeInput, visible: ServicePlanLicenseAddOnVisible, attr: { placeholder: DisplayedPlan().LicenseType }" />
+                            <span class="label">Prohibited Locations:</span>
+                            <select class="selectpicker show-tick"
+                                multiple title='Select from the following...'
+                                data-selected-text-format="count>7"
+                                data-bind="options: countryCodes, selectedOptions: ServicePlanSelectedProhibitedCountries, optionsTitle: 'Code', optionsText: 'ToString'">
+                            </select>
+                        </div>
+                        <div class="span2"></div>
+                        <div class="span5">
+                            <div>
+                                <span class="label sp-labels">Target Class:</span>
+                                <span class="muted pull-right guid" data-bind="text: formatTargetClass(DisplayedPlan().TargetClass)"></span>
+                            </div>
+                            <select id="SPTargetSelect" class="selectpicker show-tick guid" data-bind="options: AllTargetClasses, optionsText: $root.formatTargetClass, optionsTitle: $root.formatTargetClass"></select>
+                            <div class="block-40" data-bind="visible: ServicePlanLicenseAddOnVisible">
+                            </div>
+                            <span class="label">Restricted Locations:</span>
+                            <select class="selectpicker show-tick"
+                                multiple title='Select from the following...'
+                                data-selected-text-format="count>7"
+                                data-bind="options: countryCodes, selectedOptions: ServicePlanSelectedRestrictedCountries, optionsTitle: 'Code', optionsText: 'ToString'">
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row-fluid">
+                        <!-- Add Service Plan Switcher -->
+                        <div class="span12 pagination pagination-centered">
+                            <h4>Depends on Service Plans</h4>
+                        </div>
+                    </div>
+                    <div class="row-fluid">
+                        <div class="span5">
+                            <div class="pagination pagination-centered">
+                                <span class="label">Available:</span>
+                            </div>
+                            <div class="well list-nav">
+                                <!--This is come complete and utter magic-->
+                                <div class="accordion" id="SPsAvailAccordion" data-bind="foreach: ServicePlanAvailableTypes">
+                                    <div class="accordion-group">
+                                        <div class="nav-header">
+                                            <a class="accordion-toggle" data-toggle="collapse" data-parent="#SPsAvailAccordion" data-bind="text: $data, attr: { href: $root.generateAccordionLink('SPsAvailAccordion', $data) }"></a>
+                                        </div>
+                                        <div class="accordion-body collapse" data-bind="attr: { id: $root.generateAccordionId('SPsAvailAccordion', $data) }">
+                                            <div class="accordion-inner">
+                                                <ul class="nav nav-list font10" data-bind="foreach: $root.ServicePlanAvailablePlans">
+                                                    <!-- ko if: $data.ServiceType.toLowerCase() == $parent.toLowerCase() -->
+                                                    <li><a href="#" data-bind="text: ServicePlanName, click: $root.updateServicePlanAvailableSelected"></a></li>
+                                                    <!-- /ko -->
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!--/Complete and Utter Magic-->
+                            </div>
+                            <!--/.well -->
+                        </div>
+                        <div class="span2 pagination pagination-centered">
+                            <div class="down-25"></div>
+                            <p><a class="btn btn-primary btn-small" style="width: 78%" data-bind="click: addServicePlanSelectedAvailableToSelectedAdded">Add &raquo;</a></p>
+                            <p><a class="btn btn-primary btn-small" style="width: 78%" data-bind="click: addServicePlanSelectedAddedToSelectedAvailable">&laquo; Remove</a></p>
+                        </div>
+                        <!--/span-->
+                        <div class="span5">
+                            <div class="pagination pagination-centered">
+                                <span class="label">Added:</span>
+                            </div>
+                            <div class="well list-nav">
+                                <!--This is come complete and utter magic-->
+                                <div class="accordion" id="SPsAddAccordion" data-bind="foreach: ServicePlanAddedTypes">
+                                    <div class="accordion-group">
+                                        <div class="nav-header">
+                                            <a class="accordion-toggle" data-toggle="collapse" data-parent="#SPsAddAccordion" data-bind="text: $data, attr: { href: $root.generateAccordionLink('SPsAddAccordion', $data) }"></a>
+                                        </div>
+                                        <div class="accordion-body collapse" data-bind="attr: { id: $root.generateAccordionId('SPsAddAccordion', $data) }">
+                                            <div class="accordion-inner">
+                                                <ul class="nav nav-list font10" data-bind="foreach: $root.ServicePlanAddedPlans">
+                                                    <!-- ko if: $data.ServiceType.toLowerCase() == $parent.toLowerCase() -->
+                                                    <li><a href="#" data-bind="text: ServicePlanName, click: $root.updateServicePlanAddedSelected"></a></li>
+                                                    <!-- /ko -->
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!--/Complete and Utter Magic-->
+                            </div>
+                            <!--/.well -->
+                        </div>
+                    </div>
+                    <hr>
+                    <div>
+                        <a href="#" class="btn btn-primary pull-left" data-bind="click: resetDisplayedServicePlan">&laquo; Reset</a>
+                        <a href="#" class="btn btn-primary pull-left" style="margin-left: 50%" data-bind="click: validateUpdateServicePlan">Validate</a>
+                        <a href="#myModal" rolle="button" class="btn btn-primary pull-right" data-toggle="modal" data-bind="click: formatChangedServicePlanSubmision, disable: views()[0], css: { disabled: views()[1] } ">Submit Changes &raquo;</a>
+                        <div id="myModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                                <h3>Confirm Submission</h3>
+                            </div>
+                            <div id="ServicePlanSubmissionBody" class="modal-body"></div>
+                            <div class="modal-footer">
+                                <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+                                <button id="ServicePlanSubmitButton" class="btn btn-primary" data-bind="click: saveServicePlanChanges" data-dismiss="modal" aria-hidden="true">Save changes</button>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <!--/view page-->
+        </div>
+        <!--Skus page div-->
+        <div class="row-fluid" data-bind="visible: views()[1]">
+            <div class="span4">
+                <div class="well sidebar-nav">
+                    <p class="label">Sku Alphabet</p>
+                    <!--This is come complete and utter magic-->
+                    <div class="accordion" id="skusAccordion" data-bind="foreach: SkuAlphabet">
+                        <div class="accordion-group">
+                            <div class="nav-header">
+                                <a class="accordion-toggle" data-toggle="collapse" data-parent="#skusAccordion" data-bind="text: $data, attr: { href: $root.generateAccordionLink('SkusAccordion', $data) }"></a>
+                            </div>
+                            <div class="accordion-body collapse" data-bind="attr: { id: $root.generateAccordionId('SkusAccordion', $data) }">
+                                <div class="accordion-inner">
+                                    <ul class="nav nav-list font10" data-bind="foreach: $root.skus">
+                                        <!-- ko if: $data.PartNumber.charAt(0) == $parent -->
+                                        <li><a href="#" data-bind="text: PartNumber, click: $root.updateSkuView"></a></li>
+                                        <!-- /ko -->
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!--/Complete and Utter Magic-->
+                </div>
+                <div class="row-fluid">
+                    <input type="text" class="search-query" placeholder="Search Part Numbers "
+                        data-bind="visible: !SkuRegexSearchVisible(), typeahead: { target: DisplayedSku, source: skus }, typeaheadText: 'PartNumber'">
+                    <input type="text" class="search-query" placeholder="Search Part Numbers by Regex"
+                        data-bind="visible: SkuRegexSearchVisible, SkuRegex: { target: SkuRegexSearch, source: skus }, displayText: 'PartNumber'">
+                    <label class="checkbox" style="padding-top: 5px; padding-left: 50px;">
+                        <input type="checkbox" data-bind="checked: SkuRegexSearchVisible" />
+                        Search using Regex
+                    </label>
+                </div>
+            </div>
+            <!--/span-->
+            <div class="span8">
+                <div id="SkuCarousel" class="carousel slide" data-bind="visible: DisplaySkus">
+                    <ol class="carousel-indicators" data-bind="visible: SkuRegexSearch()[0].PartNumber, foreach: SkuRegexSearch">
+                        <!-- ko if: $index() == 0 -->
+                        <li class="active" data-bind="click: $root.slideToPlan.bind($data, $index())"></li>
+                        <!-- /ko -->
+                        <!-- ko if: $index() != 0 -->
+                        <li data-bind="click: $root.slideToPlan.bind($data, $index())"></li>
+                        <!-- /ko -->
+                    </ol>
+                    <!-- Carousel items -->
+                    <div class="carousel-inner" data-bind="foreach: SkuRegexSearch">
+                        <!-- ko if: $index() == 0 -->
+                        <div class="active item">
+                            <div class="hero-unit">
+                                <h2 data-bind="text: $data.PartNumber"></h2>
+                                <div class="row-fluid">
+                                    <div class="span1"></div>
+                                    <div class="span2">
+                                        <span class="label spec-label">Object Id:</span>
+                                    </div>
+                                    <div class="span9">
+                                        <span class="muted guid" data-bind="text: $data.ObjectId"></span>
+                                    </div>
+                                </div>
+                                <div class="row-fluid">
+                                    <div class="span1"></div>
+                                    <div class="span2">
+                                        <span class="label spec-label">Sku Id:</span>
+                                    </div>
+                                    <div class="span9">
+                                        <span class="muted guid" data-bind="text: $data.SkuId"></span>
+                                    </div>
+                                </div>
+                                <div class="row-fluid">
+                                    <div class="span1"></div>
+                                    <div class="span2">
+                                        <span class="label spec-label">Target Class:</span>
+                                    </div>
+                                    <div class="span9">
+                                        <span class="muted guid" data-bind="text: $root.formatTargetClass($data.TargetClass)" />
+                                    </div>
+                                </div>
+                                <div class="row-fluid">
+                                    <div class="span1"></div>
+                                    <div class="span10">
+                                        <span class="label">Service Plans Granted:</span>
+                                        <div class="well list-nav guid muted" style="max-height: 100px; height: 100px; padding: 3px;">
+                                            <ul class="nav nav-list" data-bind="foreach: $data.ServicePlanGranted">
+                                                <li style="line-height: 12px;"><span data-bind="text: $data"></span></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                                <hr>
+                                <div>
+                                    <a class="btn btn-primary pull-right" data-bind="click: $root.editSelectedSku">Edit &raquo;</a>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- /ko -->
+                        <!-- ko if: $index() != 0 -->
+                        <div class="item">
+                            <div class="hero-unit">
+                                <h2 data-bind="text: $data.PartNumber"></h2>
+                                <div class="row-fluid">
+                                    <div class="span1"></div>
+                                    <div class="span2">
+                                        <span class="label spec-label">Object Id:</span>
+                                    </div>
+                                    <div class="span9">
+                                        <span class="muted guid" data-bind="text: $data.ObjectId"></span>
+                                    </div>
+                                </div>
+                                <div class="row-fluid">
+                                    <div class="span1"></div>
+                                    <div class="span2">
+                                        <span class="label spec-label">Sku Id:</span>
+                                    </div>
+                                    <div class="span9">
+                                        <span class="muted guid" data-bind="text: $data.SkuId"></span>
+                                    </div>
+                                </div>
+                                <div class="row-fluid">
+                                    <div class="span1"></div>
+                                    <div class="span2">
+                                        <span class="label spec-label">Target Class:</span>
+                                    </div>
+                                    <div class="span9">
+                                        <span class="muted guid" data-bind="text: $root.formatTargetClass($data.TargetClass)" />
+                                    </div>
+                                </div>
+                                <div class="row-fluid">
+                                    <div class="span1"></div>
+                                    <div class="span10">
+                                        <span class="label">Service Plans Granted:</span>
+                                        <div class="well list-nav guid muted" style="max-height: 100px; height: 100px; padding: 3px;">
+                                            <ul class="nav nav-list" data-bind="foreach: $data.ServicePlanGranted">
+                                                <li style="line-height: 12px;"><span data-bind="text: $data"></span></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                                <hr>
+                                <div>
+                                    <a class="btn btn-primary pull-right" data-bind="click: $root.editSelectedSku">Edit &raquo;</a>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- /ko -->
+                    </div>
+                    <!-- Carousel nav -->
+                    <a class="carousel-control left" href="#SkuCarousel" data-slide="prev" data-bind="visible: SkuRegexSearch()[1]">&lsaquo;</a>
+                    <a class="carousel-control right" href="#SkuCarousel" data-slide="next" data-bind="visible: SkuRegexSearch()[1]">&rsaquo;</a>
+                </div>
+
+                <div class="hero-unit" data-bind="visible: DisplayedSku().PartNumber">
+                    <h2 data-bind="text: DisplayedSku().PartNumber"></h2>
+                    <div class="row-fluid">
+                        <div class="span2">
+                            <span class="label spec-label">Part Number:</span>
+                        </div>
+                        <div class="span4">
+                            <input type="text" class="input-block-level" data-bind="value: SkuPartNumberInput, attr: { placeholder: DisplayedSku().PartNumber }" />
+                        </div>
+                        <div class="span2">
+                            <span class="label spec-label">Target Class:</span>
+                        </div>
+                        <div class="span4">
+                            <select id="SkuTargetClassSelect" class="selectpicker show-tick guid" data-bind="options: AllTargetClasses, optionsText: $root.formatTargetClass, optionsTitle: $root.formatTargetClass"></select>
+                        </div>
+                    </div>
+                    <div class="row-fluid">
+                        <div class="span2">
+                            <span class="label spec-label">Object Id:</span>
+                        </div>
+                        <div class="span10">
+                            <span class="muted guid" data-bind="text: DisplayedSku().ObjectId"></span>
+                        </div>
+                    </div>
+                    <div class="row-fluid">
+                        <div class="span2">
+                            <span class="label spec-label">Sku Id:</span>
+                        </div>
+                        <div class="span10">
+                            <span class="muted guid" data-bind="text: DisplayedSku().SkuId"></span>
+                        </div>
+                    </div>
+                    <div class="row-fluid">
+                        <!-- Add Service Plan Switcher -->
+                        <div class="span12 pagination pagination-centered">
+                            <h4>Add Service Plans</h4>
+                        </div>
+                    </div>
+                    <div class="row-fluid">
+                        <div class="span5">
+                            <div class="pagination pagination-centered">
+                                <span class="label">Available:</span>
+                            </div>
+                            <div class="well list-nav">
+                                <!--This is come complete and utter magic-->
+                                <div class="accordion" id="SkusAvailAccordion" data-bind="foreach: SkuAvailableTypes">
+                                    <div class="accordion-group">
+                                        <div class="nav-header">
+                                            <a class="accordion-toggle" data-toggle="collapse" data-parent="#SkusAvailAccordion" data-bind="text: $data, attr: { href: $root.generateAccordionLink('SkusAvailAccordion', $data) }"></a>
+                                        </div>
+                                        <div class="accordion-body collapse" data-bind="attr: { id: $root.generateAccordionId('SkusAvailAccordion', $data) }">
+                                            <div class="accordion-inner">
+                                                <ul class="nav nav-list font10" data-bind="foreach: $root.SkuAvailablePlans">
+                                                    <!-- ko if: $data.ServiceType.toLowerCase() == $parent.toLowerCase() -->
+                                                    <li><a href="#" data-bind="text: ServicePlanName, click: $root.updateSkuAvailableSelected"></a></li>
+                                                    <!-- /ko -->
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!--/Complete and Utter Magic-->
+                            </div>
+                            <!--/.well -->
+                        </div>
+                        <div class="span2 pagination pagination-centered">
+                            <div class="down-25"></div>
+                            <p><a class="btn btn-primary btn-small" style="width: 78%" data-bind="click: addSkuSelectedAvailableToSelectedAdded">Add &raquo;</a></p>
+                            <p><a class="btn btn-primary btn-small" style="width: 78%" data-bind="click: addSkuSelectedAddedToSelectedAvailable">&laquo; Remove</a></p>
+                        </div>
+                        <!--/span-->
+                        <div class="span5">
+                            <div class="pagination pagination-centered">
+                                <span class="label">Added:</span>
+                            </div>
+                            <div class="well list-nav">
+                                <!--This is come complete and utter magic-->
+                                <div class="accordion" id="SkusAddAccordion" data-bind="foreach: SkuAddedTypes">
+                                    <div class="accordion-group">
+                                        <div class="nav-header">
+                                            <a class="accordion-toggle" data-toggle="collapse" data-parent="#SkusAddAccordion" data-bind="text: $data, attr: { href: $root.generateAccordionLink('SkusAddAccordion', $data) }"></a>
+                                        </div>
+                                        <div class="accordion-body collapse" data-bind="attr: { id: $root.generateAccordionId('SkusAddAccordion', $data) }">
+                                            <div class="accordion-inner">
+                                                <ul class="nav nav-list font10" data-bind="foreach: $root.SkuAddedPlans">
+                                                    <!-- ko if: $data.ServiceType.toLowerCase() == $parent.toLowerCase() -->
+                                                    <li><a href="#" data-bind="text: ServicePlanName, click: $root.updateSkuAddedSelected"></a></li>
+                                                    <!-- /ko -->
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!--/Complete and Utter Magic-->
+                            </div>
+                            <!--/.well -->
+                        </div>
+                    </div>
+                    <hr>
+                    <div>
+                        <a href="#" class="btn btn-primary pull-left" data-bind="click: resetDisplayedSku">&laquo; Reset</a>
+                        <a href="#" class="btn btn-primary pull-left" style="margin-left: 50%" data-bind="click: validateUpdateSku">Validate</a>
+                        <a href="#SkuModal" rolle="button" class="btn btn-primary pull-right" data-toggle="modal" data-bind="click: formatChangedSkuSubmision">Submit Changes &raquo;</a>
+                        <div id="SkuModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="SkuModalLabel" aria-hidden="true">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                                <h3>Confirm Submission</h3>
+                            </div>
+                            <div id="SkuSubmissionBody" class="modal-body"></div>
+                            <div class="modal-footer">
+                                <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+                                <button id="SkuSubmitButton" class="btn btn-primary" data-bind="click: saveSkuChanges" data-dismiss="modal" aria-hidden="true">Save changes</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--Add Skus page div-->
+        <div data-bind="visible: views()[4]">
+            <div class="hero-unit">
+                <h2 data-bind="text: 'Add New Stock Keeping Unit'"></h2>
+                <div class="row-fluid">
+                    <div class="span2">
+                        <span class="label spec-label-two">Part Number:</span>
+                    </div>
+                    <div class="span4">
+                        <input type="text" class="input-block-level" data-bind="value: NewSkuPartNumberInput, attr: { placeholder: 'PART_NUMBER' }" />
+                    </div>
+                    <div class="span2">
+                        <span class="label spec-label-two">Target Class:</span>
+                    </div>
+                    <div class="span4">
+                        <select id="NewSkuTargetClassSelect" class="selectpicker show-tick guid" data-bind="options: AllTargetClasses, optionsText: $root.formatTargetClass, optionsTitle: $root.formatTargetClass"></select>
+                    </div>
+                </div>
+                <div class="row-fluid">
+                    <div class="span2">
+                        <span class="label spec-label-two">Object Id:</span>
+                    </div>
+                    <div class="span10">
+                        <span class="muted guid" data-bind="text: 'Generated Upon Submission'"></span>
+                    </div>
+                </div>
+                <div class="row-fluid">
+                    <div class="span2">
+                        <span class="label spec-label-two">Sku Id:</span>
+                    </div>
+                    <div class="span10">
+                        <span class="muted guid" data-bind="text: 'Generated Upon Submission'"></span>
+                    </div>
+                </div>
+                <div class="row-fluid">
+                    <!-- Add Service Plan Switcher -->
+                    <div class="span12 pagination pagination-centered">
+                        <h4>Add Service Plans</h4>
+                    </div>
+                </div>
+                <div class="row-fluid">
+                    <div class="span5">
+                        <div class="pagination pagination-centered">
+                            <span class="label spec-label-three">Available:</span>
+                        </div>
+                        <div class="well list-nav">
+                            <!--This is come complete and utter magic-->
+                            <div class="accordion" id="NewSkuAvailAccordion" data-bind="foreach: NewSkuAvailableTypes">
+                                <div class="accordion-group">
+                                    <div class="nav-header">
+                                        <a class="accordion-toggle" data-toggle="collapse" data-parent="#NewSkuAvailAccordion" data-bind="text: $data, attr: { href: $root.generateAccordionLink('NewSkuAvailAccordion', $data) }"></a>
+                                    </div>
+                                    <div class="accordion-body collapse" data-bind="attr: { id: $root.generateAccordionId('NewSkuAvailAccordion', $data) }">
+                                        <div class="accordion-inner">
+                                            <ul class="nav nav-list font10" data-bind="foreach: $root.NewSkuAvailablePlans">
+                                                <!-- ko if: $data.ServiceType.toLowerCase() == $parent.toLowerCase() -->
+                                                <li><a href="#" data-bind="text: ServicePlanName, click: $root.updateNewSkuAvailableSelected"></a></li>
+                                                <!-- /ko -->
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!--/Complete and Utter Magic-->
+                        </div>
+                        <!--/.well -->
+                    </div>
+                    <div class="span2 pagination pagination-centered">
+                        <div class="down-25"></div>
+                        <p><a class="btn btn-primary btn-small" style="width: 78%" data-bind="click: addNewSkuSelectedAvailableToSelectedAdded">Add &raquo;</a></p>
+                        <p><a class="btn btn-primary btn-small" style="width: 78%" data-bind="click: addNewSkuSelectedAddedToSelectedAvailable">&laquo; Remove</a></p>
+                    </div>
+                    <!--/span-->
+                    <div class="span5">
+                        <div class="pagination pagination-centered">
+                            <span class="label spec-label-three">Added:</span>
+                        </div>
+                        <div class="well list-nav">
+                            <!--This is come complete and utter magic-->
+                            <div class="accordion" id="NewSkuAddAccordion" data-bind="foreach: NewSkuAddedTypes">
+                                <div class="accordion-group">
+                                    <div class="nav-header">
+                                        <a class="accordion-toggle" data-toggle="collapse" data-parent="#NewSkuAddAccordion" data-bind="text: $data, attr: { href: $root.generateAccordionLink('NewSkuAddAccordion', $data) }"></a>
+                                    </div>
+                                    <div class="accordion-body collapse" data-bind="attr: { id: $root.generateAccordionId('NewSkuAddAccordion', $data) }">
+                                        <div class="accordion-inner">
+                                            <ul class="nav nav-list font10" data-bind="foreach: $root.NewSkuAddedPlans">
+                                                <!-- ko if: $data.ServiceType.toLowerCase() == $parent.toLowerCase() -->
+                                                <li><a href="#" data-bind="text: ServicePlanName, click: $root.updateNewSkuAddedSelected"></a></li>
+                                                <!-- /ko -->
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!--/Complete and Utter Magic-->
+                        </div>
+                        <!--/.well -->
+                    </div>
+                </div>
+                <hr>
+                <div>
+                    <a href="#" class="btn btn-primary pull-left" data-bind="click: resetNewSku">&laquo; Reset</a>
+                    <a href="#" class="btn btn-primary pull-left" style="margin-left: 68%" data-bind="click: validateNewSku">Validate</a>
+                    <a href="#NewSkuModal" rolle="button" class="btn btn-primary pull-right" data-toggle="modal" data-bind="click: formatNewSkuSubmision">Submit Changes &raquo;</a>
+                    <div id="NewSkuModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="NewSkuModalLabel" aria-hidden="true">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                            <h3>Confirm Submission</h3>
+                        </div>
+                        <div id="NewSkuSubmissionBody" class="modal-body"></div>
+                        <div class="modal-footer">
+                            <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+                            <button id="NewSkuSubmitButton" class="btn btn-primary" data-bind="click: addSku" data-dismiss="modal" aria-hidden="true">Save changes</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--Add Serv Plans Page div-->
+        <div data-bind="visible: views()[3]">
+            <div class="hero-unit">
+                <h2 data-bind="text: 'New Service Plan'"></h2>
+                <div class="row-fluid">
+                    <div class="span2">
+                        <span class="label spec-label-two">Plan Name:</span>
+                    </div>
+                    <div class="span4">
+                        <input type="text" class="input-block-level" data-bind="value: NewServicePlanNameInput, attr: { placeholder: 'Enter Service Plan Name' }" />
+                    </div>
+                    <div class="span2">
+                        <span class="label spec-label-two">Service Type:</span>
+                    </div>
+                    <div class="span4">
+                        <select class="selectpicker show-tick guid" data-bind="value: NewServicePlanServiceType, options: ServiceTypes, optionsText: 'ServiceType', optionsTitle: 'ServiceType'"></select>
+                    </div>
+                </div>
+                <div class="row-fluid">
+                    <div class="span2">
+                        <span class="label spec-label-two">Object Id:</span>
+                    </div>
+                    <div class="span10">
+                        <span class="muted guid" data-bind="text: 'Generated Upon Submission'"></span>
+                    </div>
+                </div>
+                <div class="row-fluid">
+                    <div class="span2">
+                        <span class="label spec-label-two">Plan Id:</span>
+                    </div>
+                    <div class="span10">
+                        <span class="muted guid" data-bind="text: 'Generated Upon Submission'"></span>
+                    </div>
+                </div>
+                <h4></h4>
+                <div class="row-fluid">
+                    <div class="span2">
+                        <p class="label spec-label-two">Capability String:</p>
+                    </div>
+                    <div class="span10">
+                        <span class="muted guid">Enter the information for the Capability String below</span>
+                    </div>
+                </div>
+                <div class="well">
+                    <div class="row-fluid">
+                        <div class="span3">
+                            <span class="muted guid pull-right">xmlns:</span>
+                        </div>
+                        <div class="span9">
+                            <input type="text" class="input-block-level" data-bind="value: NewServicePlanCapabilityXmlnsInput, attr: { placeholder: 'Address for the XML element' }" />
+                        </div>
+                    </div>
+                    <div class="row-fluid">
+                        <div class="span3">
+                            <select id="NewServicePlanCapabilityPlanSelect" class="selectpicker show-tick guid" data-bind="options: ['Plan', 'MailboxPlan']"></select>
+                        </div>
+                        <div class="span9">
+                            <input type="text" class="input-block-level" data-bind="value: NewServicePlanCapabilityPlanInput, attr: { placeholder: 'Type of Plan or MailboxPlan' }" />
+                        </div>
+                    </div>
+                </div>
+                <h6></h6>
+                <div class="row-fluid">
+                    <div class="span5">
+                        <span class="label spec-label-three">License Type:</span>
+                        <select id="NewServicePlanLicenseTypeSelect" class="selectpicker show-tick guid" onchange="toggleNewServicePlanLicenseAddOnInput(this)" data-bind="options: NewServicePlanLicenseTypes"></select>
+                        <input type="text" class="input-block-level" data-bind="value: NewServicePlanLicenseTypeInput, visible: NewServicePlanLicenseAddOnVisible, attr: { placeholder: DisplayedPlan().LicenseType }" />
+                        <span class="label spec-label-three">Prohibited Locations:</span>
+                        <select class="selectpicker show-tick"
+                            multiple title='Select from the following...'
+                            data-selected-text-format="count>7"
+                            data-bind="options: countryCodes, selectedOptions: NewServicePlanSelectedProhibitedCountries, optionsTitle: 'Code', optionsText: 'ToString'">
+                        </select>
+                    </div>
+                    <div class="span2"></div>
+                    <div class="span5">
+                        <span class="label spec-label-three">Target Class:</span>
+                        <select id="NewServicePlanTargetClassSelect" class="selectpicker show-tick guid" data-bind="options: AllTargetClasses, optionsText: $root.formatTargetClass, optionsTitle: $root.formatTargetClass"></select>
+                        <div class="block-40" data-bind="visible: NewServicePlanLicenseAddOnVisible">
+                        </div>
+                        <span class="label spec-label-three">Restricted Locations:</span>
+                        <select class="selectpicker show-tick"
+                            multiple title='Select from the following...'
+                            data-selected-text-format="count>7"
+                            data-bind="options: countryCodes, selectedOptions: NewServicePlanSelectedRestrictedCountries, optionsTitle: 'Code', optionsText: 'ToString'">
+                        </select>
+                    </div>
+                </div>
+                <div class="row-fluid">
+                    <!-- Add Service Plan Switcher -->
+                    <div class="span12 pagination pagination-centered">
+                        <h4>Depends on Service Plans</h4>
+                    </div>
+                </div>
+                <div class="row-fluid">
+                    <div class="span5">
+                        <div class="pagination pagination-centered">
+                            <span class="label spec-label-three">Available:</span>
+                        </div>
+                        <div class="well list-nav">
+                            <!--This is come complete and utter magic-->
+                            <div class="accordion" id="NewServicePlanAvailAccordion" data-bind="foreach: NewServicePlanAvailableTypes">
+                                <div class="accordion-group">
+                                    <div class="nav-header">
+                                        <a class="accordion-toggle" data-toggle="collapse" data-parent="#NewServicePlanAvailAccordion" data-bind="text: $data, attr: { href: $root.generateAccordionLink('NewServicePlanAvailAccordion', $data) }"></a>
+                                    </div>
+                                    <div class="accordion-body collapse" data-bind="attr: { id: $root.generateAccordionId('NewServicePlanAvailAccordion', $data) }">
+                                        <div class="accordion-inner">
+                                            <ul class="nav nav-list font10" data-bind="foreach: $root.NewServicePlanAvailablePlans">
+                                                <!-- ko if: $data.ServiceType.toLowerCase() == $parent.toLowerCase() -->
+                                                <li><a href="#" data-bind="text: ServicePlanName, click: $root.updateNewServicePlanAvailableSelected"></a></li>
+                                                <!-- /ko -->
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!--/Complete and Utter Magic-->
+                        </div>
+                        <!--/.well -->
+                    </div>
+                    <div class="span2 pagination pagination-centered">
+                        <div class="down-25"></div>
+                        <p><a class="btn btn-primary btn-small" style="width: 78%" data-bind="click: addNewServicePlanSelectedAvailableToSelectedAdded">Add &raquo;</a></p>
+                        <p><a class="btn btn-primary btn-small" style="width: 78%" data-bind="click: addNewServicePlanSelectedAddedToSelectedAvailable">&laquo; Remove</a></p>
+                    </div>
+                    <!--/span-->
+                    <div class="span5">
+                        <div class="pagination pagination-centered">
+                            <span class="label spec-label-three">Added:</span>
+                        </div>
+                        <div class="well list-nav">
+                            <!--This is come complete and utter magic-->
+                            <div class="accordion" id="NewServicePlanAddAccordion" data-bind="foreach: NewServicePlanAddedTypes">
+                                <div class="accordion-group">
+                                    <div class="nav-header">
+                                        <a class="accordion-toggle" data-toggle="collapse" data-parent="#NewServicePlanAddAccordion" data-bind="text: $data, attr: { href: $root.generateAccordionLink('NewServicePlanAddAccordion', $data) }"></a>
+                                    </div>
+                                    <div class="accordion-body collapse" data-bind="attr: { id: $root.generateAccordionId('NewServicePlanAddAccordion', $data) }">
+                                        <div class="accordion-inner">
+                                            <ul class="nav nav-list font10" data-bind="foreach: $root.NewServicePlanAddedPlans">
+                                                <!-- ko if: $data.ServiceType.toLowerCase() == $parent.toLowerCase() -->
+                                                <li><a href="#" data-bind="text: ServicePlanName, click: $root.updateNewServicePlanAddedSelected"></a></li>
+                                                <!-- /ko -->
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!--/Complete and Utter Magic-->
+                        </div>
+                        <!--/.well -->
+                    </div>
+                </div>
+                <hr>
+                <div>
+                    <a href="#" class="btn btn-primary pull-left" data-bind="click: resetNewServicePlan">&laquo; Reset</a>
+                    <a href="#" class="btn btn-primary pull-left" style="margin-left: 68%" data-bind="click: validateNewServicePlan">Validate</a>
+                    <a href="#NewServicePlanModal" rolle="button" class="btn btn-primary pull-right" data-toggle="modal" data-bind="click: formatNewServicePlanSubmision">Submit Changes &raquo;</a>
+                    <div id="NewServicePlanModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="NewServicePlanModalLabel" aria-hidden="true">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                            <h3>Confirm Submission</h3>
+                        </div>
+                        <div id="NewServicePlanSubmissionBody" class="modal-body"></div>
+                        <div class="modal-footer">
+                            <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+                            <button id="NewServicePlanSubmitButton" class="btn btn-primary" data-bind="click: addServicePlan" data-dismiss="modal" aria-hidden="true">Save changes</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--Service Types Page div-->
+        <div data-bind="visible: views()[2]">
+            <div class="hero-unit">
+                <h2>Available Service Types</h2>
+                <div class="row-fluid">
+                    <div class="span4 well sidebar-nav">
+                        <p class="label">Service Type Alphabet</p>
+                        <!--This is come complete and utter magic-->
+                        <div class="accordion" id="stsAccordion" data-bind="foreach: ServiceTypesAlphabet">
+                            <div class="accordion-group">
+                                <div class="nav-header">
+                                    <a class="accordion-toggle" data-toggle="collapse" data-parent="#stsAccordion" data-bind="text: $data, attr: { href: $root.generateAccordionLink('stsAccordion', $data) }"></a>
+                                </div>
+                                <div class="accordion-body collapse" data-bind="attr: { id: $root.generateAccordionId('stsAccordion', $data) }">
+                                    <div class="accordion-inner">
+                                        <ul class="nav nav-list font10" data-bind="foreach: $root.ServiceTypes">
+                                            <!-- ko if: $data.ServiceType.charAt(0) == $parent -->
+                                            <li><a href="#" data-bind="text: $data.ServiceType, click: $root.updateServiceTypeView"></a></li>
+                                            <!-- /ko -->
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!--/Complete and Utter Magic-->
+                    </div>
+                    <div class="span8 well" data-bind="visible: DisplayedServiceType()">
+                        <h4 data-bind="text: DisplayedServiceType().ServiceType"></h4>
+                        <div class="row-fluid">
+                            <div class="span2">
+                                <span class="label spec-label">Object Id:</span>
+                            </div>
+                            <div class="span10">
+                                <p class="muted guid" data-bind="text: DisplayedServiceType().ObjectId"></p>
+                            </div>
+                        </div>
+						<div data-bind="visible: ServicePrincipalTemplateVisible()">
+							<hr>
+							<div class="pagination pagination-centered">
+								<a href="#" class="btn btn-primary pull-right">Add Service Principal Template &raquo;</a>
+							</div>
+						</div>
+						<div data-bind="visible: !ServicePrincipalTemplateVisible()">
+							<div class="pagination pagination-centered">
+								<h5>Service Principal Template</h5>
+							</div>
+							<div class="row-fluid">
+								<div class="span2">
+									<span class="label spec-label">Include:</span>
+								</div>
+								<div class="span8">
+									<select class="selectpicker show-tick guid" data-bind="options: ServiceTypes, optionsText: 'ServiceType', optionsTitle: 'ServiceType'"></select>
+								</div>
+								<div class="span2">
+									<p><a class="btn btn-primary btn-small" style="width: 80%; margin-top: 2%">Add</a></p>
+								</div>
+							</div>
+							<div class="row-fluid">
+								<div class="span2">
+								</div>
+								<div class="span8">
+									<select multiple class="show-tick guid" style="width: 100%" data-bind="options: ['placeholder', 'placeholder', 'placeholder']"></select>
+								</div>
+								<div class="span2">
+									<p><a class="btn btn-primary btn-small" style="width: 80%; margin-top: 25%">Remove</a></p>
+								</div>
+							</div>
+							<div class="row-fluid">
+								<div class="span2">
+									<span class="label spec-label">Display Name:</span>
+								</div>
+								<div class="span8">
+									<input type="text" class="input-block-level" />
+								</div>
+								<div class="span2">
+								</div>
+							</div>
+							<div class="row-fluid">
+								<div class="span2">
+									<span class="label spec-label">App Class:</span>
+								</div>
+								<div class="span8">
+									<input type="text" class="input-block-level" />
+								</div>
+								<div class="span2">
+								</div>
+							</div>
+							<div class="row-fluid">
+								<div class="span2">
+									<span class="label spec-label">Principal ID:</span>
+								</div>
+								<div class="span8">
+									<input type="text" class="input-block-level" />
+								</div>
+								<div class="span2">
+									<p><a class="btn btn-primary btn-small" style="width: 80%; margin-top: 2%">Generate</a></p>
+								</div>
+							</div>
+							<div class="row-fluid">
+								<div class="span2">
+									<span class="label spec-label">Key Group ID:</span>
+								</div>
+								<div class="span8">
+									<input type="text" class="input-block-level" />
+								</div>
+								<div class="span2">
+									<p><a class="btn btn-primary btn-small" style="width: 80%; margin-top: 2%">Generate</a></p>
+								</div>
+							</div>
+							<div class="row-fluid">
+								<div class="span2">
+								</div>
+								<div class="span8">
+									<label class="checkbox">
+										<input type="checkbox" />
+										External User Account Delegations Allowed
+									</label>
+								</div>
+								<div class="span2">
+								</div>
+							</div>
+							<div class="row-fluid">
+								<div class="span2">
+								</div>
+								<div class="span8">
+									<label class="checkbox">
+										<input type="checkbox" />
+										Microsoft Policy Group
+									</label>
+								</div>
+								<div class="span2">
+								</div>
+							</div>
+							<div class="row-fluid">
+								<div class="span2">
+								</div>
+								<div class="span8">
+									<label class="checkbox">
+										<input type="checkbox" />
+										Managed Externally
+									</label>
+								</div>
+								<div class="span2">
+								</div>
+							</div>
+							<div class="row-fluid">
+								<div class="span6">
+									<span class="label spec-label">Environments:</span>
+								</div>
+								<div class="span6">
+									<span class="label spec-label">Hostnames:</span>
+								</div>
+							</div>
+							<h6></h6>
+							<div class="row-fluid">
+								<div class="span4">
+									<input type="text" class="input-block-level" />
+								</div>
+								<div class="span2">
+									<p><a class="btn btn-primary btn-small" style="width: 80%; margin-top: 2%">Add</a></p>
+								</div>
+								<div class="span4">
+									<input type="text" class="input-block-level" />
+								</div>
+								<div class="span2">
+									<p><a class="btn btn-primary btn-small" style="width: 80%; margin-top: 2%">Add</a></p>
+								</div>
+							</div>
+							<div class="row-fluid">
+								<div class="span4">
+									<select multiple class="show-tick guid" style="width: 100%" data-bind="options: ['placeholder', 'placeholder', 'placeholder']"></select>
+								</div>
+								<div class="span2">
+									<p><a class="btn btn-primary btn-small" style="width: 80%; margin-top: 25%">Remove</a></p>
+								</div>
+								<div class="span4">
+									<select multiple class="show-tick guid" style="width: 100%" data-bind="options: ['placeholder', 'placeholder', 'placeholder']"></select>
+								</div>
+								<div class="span2">
+									<p><a class="btn btn-primary btn-small" style="width: 80%; margin-top: 25%">Remove</a></p>
+								</div>
+							</div>
+							<div class="row-fluid">
+								<div class="span6">
+									<span class="label spec-label">Additional Service Principal Names:</span>
+								</div>
+								<div class="span6">
+									<span class="label spec-label">App Addresses:</span>
+								</div>
+							</div>
+							<h6></h6>
+							<div class="row-fluid">
+								<div class="span4">
+									<input type="text" class="input-block-level" />
+								</div>
+								<div class="span2">
+									<p><a class="btn btn-primary btn-small" style="width: 80%; margin-top: 2%">Add</a></p>
+								</div>
+								<div class="span4">
+									<input type="text" class="input-block-level" />
+								</div>
+								<div class="span2">
+									<p><a class="btn btn-primary btn-small" style="width: 80%; margin-top: 2%">Add</a></p>
+								</div>
+							</div>
+							<div class="row-fluid">
+								<div class="span4">
+									<select multiple class="show-tick guid" style="width: 100%" data-bind="options: ['placeholder', 'placeholder', 'placeholder']"></select>
+								</div>
+								<div class="span2">
+									<p><a class="btn btn-primary btn-small" style="width: 80%; margin-top: 25%">Remove</a></p>
+								</div>
+								<div class="span4">
+									<select multiple class="show-tick guid" style="width: 100%" data-bind="options: ['placeholder', 'placeholder', 'placeholder']"></select>
+								</div>
+								<div class="span2">
+									<p><a class="btn btn-primary btn-small" style="width: 80%; margin-top: 25%">Remove</a></p>
+								</div>
+							</div>
+							<div class="row-fluid">
+								<div class="span2">
+									<span class="label spec-label">Constrained Delegation To:</span>
+								</div>
+								<div class="span8">
+									<select class="selectpicker show-tick guid" style="width: 100%" data-bind="options: ['placeholder', 'placeholder', 'placeholder']"></select>
+								</div>
+								<div class="span2">
+									<p><a class="btn btn-primary btn-small" style="width: 80%; margin-top: 2%">Add</a></p>
+								</div>
+							</div>
+							<div class="row-fluid">
+								<div class="span2">
+								</div>
+								<div class="span8">
+									<select multiple class="show-tick guid" style="width: 100%" data-bind="options: ['placeholder', 'placeholder', 'placeholder']"></select>
+								</div>
+								<div class="span2">
+									<p><a class="btn btn-primary btn-small" style="width: 80%; margin-top: 25%">Remove</a></p>
+								</div>
+							</div>
+							<div class="row-fluid">
+								<div class="span2">
+									<span class="label spec-label">Roles to Add:</span>
+								</div>
+								<div class="span8">
+									<input type="text" class="input-block-level" />
+								</div>
+								<div class="span2">
+									<p><a class="btn btn-primary btn-small" style="width: 80%; margin-top: 2%">Add</a></p>
+								</div>
+							</div>
+							<div class="row-fluid">
+								<div class="span2">
+								</div>
+								<div class="span8">
+									<select multiple class="show-tick guid" style="width: 100%" data-bind="options: ['placeholder', 'placeholder', 'placeholder']"></select>
+								</div>
+								<div class="span2">
+									<p><a class="btn btn-primary btn-small" style="width: 80%; margin-top: 25%">Remove</a></p>
+								</div>
+							</div>
+							<div class="row-fluid">
+								<div class="span2">
+									<span class="label spec-label">Selective Provisioning Contexts:</span>
+								</div>
+								<div class="span8">
+									<input type="text" class="input-block-level" />
+								</div>
+								<div class="span2">
+									<p><a class="btn btn-primary btn-small" style="width: 80%; margin-top: 2%">Add</a></p>
+								</div>
+							</div>
+							<div class="row-fluid">
+								<div class="span2">
+								</div>
+								<div class="span8">
+									<select multiple class="show-tick guid" style="width: 100%" data-bind="options: ['placeholder', 'placeholder', 'placeholder']"></select>
+								</div>
+								<div class="span2">
+									<p><a class="btn btn-primary btn-small" style="width: 80%; margin-top: 25%">Remove</a></p>
+								</div>
+							</div>
+							<hr>
+							<div class="pagination pagination-centered">
+								<a href="#" class="btn btn-primary pull-left">&laquo; Reset</a>
+								<a href="#" class="btn btn-primary pull-left" style="margin-left: 2%">Expert XML</a>
+								<a href="#" class="btn btn-primary pull-left" style="margin-left: 31%">Validate</a>
+								<a href="#" class="btn btn-primary pull-right">Submit Changes &raquo;</a>
+							</div>
+						</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div data-bind="visible: views()[5]">
+			<div class="hero-unit">
+				<h4 data-bind="text: DisplayedServiceType().ServiceType"></h4>
+				<div class="row-fluid">
+					<div class="span2">
+						<span class="label spec-label">Object Id:</span>
+					</div>
+					<div class="span10">
+						<p class="muted guid" data-bind="text: DisplayedServiceType().ObjectId"></p>
+					</div>
+				</div>
+				<div data-bind="visible: ServicePrincipalTemplateVisible()">
+					<hr>
+					<div class="pagination pagination-centered">
+						<a href="#" class="btn btn-primary pull-right">Add Service Principal Template &raquo;</a>
+					</div>
+				</div>
+				<div data-bind="visible: !ServicePrincipalTemplateVisible()">
+					<div class="pagination pagination-centered">
+						<h5>Service Principal Template</h5>
+					</div>
+					<div class="row-fluid">
+						<div class="span2">
+							<span class="label spec-label">Include:</span>
+						</div>
+						<div class="span8">
+							<select class="selectpicker show-tick guid" data-bind="options: ServiceTypes, optionsText: 'ServiceType', optionsTitle: 'ServiceType'"></select>
+						</div>
+						<div class="span2">
+							<p><a class="btn btn-primary btn-small" style="width: 80%; margin-top: 2%">Add</a></p>
+						</div>
+					</div>
+					<div class="row-fluid">
+						<div class="span2">
+						</div>
+						<div class="span8">
+							<select multiple class="show-tick guid" style="width: 100%" data-bind="options: ['placeholder', 'placeholder', 'placeholder']"></select>
+						</div>
+						<div class="span2">
+							<p><a class="btn btn-primary btn-small" style="width: 80%; margin-top: 25%">Remove</a></p>
+						</div>
+					</div>
+					<div class="row-fluid">
+						<div class="span2">
+							<span class="label spec-label">Display Name:</span>
+						</div>
+						<div class="span8">
+							<input type="text" class="input-block-level" />
+						</div>
+						<div class="span2">
+						</div>
+					</div>
+					<div class="row-fluid">
+						<div class="span2">
+							<span class="label spec-label">App Class:</span>
+						</div>
+						<div class="span8">
+							<input type="text" class="input-block-level" />
+						</div>
+						<div class="span2">
+						</div>
+					</div>
+					<div class="row-fluid">
+						<div class="span2">
+							<span class="label spec-label">Principal ID:</span>
+						</div>
+						<div class="span8">
+							<input type="text" class="input-block-level" />
+						</div>
+						<div class="span2">
+							<p><a class="btn btn-primary btn-small" style="width: 80%; margin-top: 2%">Generate</a></p>
+						</div>
+					</div>
+					<div class="row-fluid">
+						<div class="span2">
+							<span class="label spec-label">Key Group ID:</span>
+						</div>
+						<div class="span8">
+							<input type="text" class="input-block-level" />
+						</div>
+						<div class="span2">
+							<p><a class="btn btn-primary btn-small" style="width: 80%; margin-top: 2%">Generate</a></p>
+						</div>
+					</div>
+					<div class="row-fluid">
+						<div class="span2">
+						</div>
+						<div class="span8">
+							<label class="checkbox">
+								<input type="checkbox" />
+								External User Account Delegations Allowed
+							</label>
+						</div>
+						<div class="span2">
+						</div>
+					</div>
+					<div class="row-fluid">
+						<div class="span2">
+						</div>
+						<div class="span8">
+							<label class="checkbox">
+								<input type="checkbox" />
+								Microsoft Policy Group
+							</label>
+						</div>
+						<div class="span2">
+						</div>
+					</div>
+					<div class="row-fluid">
+						<div class="span2">
+						</div>
+						<div class="span8">
+							<label class="checkbox">
+								<input type="checkbox" />
+								Managed Externally
+							</label>
+						</div>
+						<div class="span2">
+						</div>
+					</div>
+					<div class="row-fluid">
+						<div class="span6">
+							<span class="label spec-label">Environments:</span>
+						</div>
+						<div class="span6">
+							<span class="label spec-label">Hostnames:</span>
+						</div>
+					</div>
+					<h6></h6>
+					<div class="row-fluid">
+						<div class="span4">
+							<input type="text" class="input-block-level" />
+						</div>
+						<div class="span2">
+							<p><a class="btn btn-primary btn-small" style="width: 80%; margin-top: 2%">Add</a></p>
+						</div>
+						<div class="span4">
+							<input type="text" class="input-block-level" />
+						</div>
+						<div class="span2">
+							<p><a class="btn btn-primary btn-small" style="width: 80%; margin-top: 2%">Add</a></p>
+						</div>
+					</div>
+					<div class="row-fluid">
+						<div class="span4">
+							<select multiple class="show-tick guid" style="width: 100%" data-bind="options: ['placeholder', 'placeholder', 'placeholder']"></select>
+						</div>
+						<div class="span2">
+							<p><a class="btn btn-primary btn-small" style="width: 80%; margin-top: 25%">Remove</a></p>
+						</div>
+						<div class="span4">
+							<select multiple class="show-tick guid" style="width: 100%" data-bind="options: ['placeholder', 'placeholder', 'placeholder']"></select>
+						</div>
+						<div class="span2">
+							<p><a class="btn btn-primary btn-small" style="width: 80%; margin-top: 25%">Remove</a></p>
+						</div>
+					</div>
+					<div class="row-fluid">
+						<div class="span6">
+							<span class="label spec-label">Additional Service Principal Names:</span>
+						</div>
+						<div class="span6">
+							<span class="label spec-label">App Addresses:</span>
+						</div>
+					</div>
+					<h6></h6>
+					<div class="row-fluid">
+						<div class="span4">
+							<input type="text" class="input-block-level" />
+						</div>
+						<div class="span2">
+							<p><a class="btn btn-primary btn-small" style="width: 80%; margin-top: 2%">Add</a></p>
+						</div>
+						<div class="span4">
+							<input type="text" class="input-block-level" />
+						</div>
+						<div class="span2">
+							<p><a class="btn btn-primary btn-small" style="width: 80%; margin-top: 2%">Add</a></p>
+						</div>
+					</div>
+					<div class="row-fluid">
+						<div class="span4">
+							<select multiple class="show-tick guid" style="width: 100%" data-bind="options: ['placeholder', 'placeholder', 'placeholder']"></select>
+						</div>
+						<div class="span2">
+							<p><a class="btn btn-primary btn-small" style="width: 80%; margin-top: 25%">Remove</a></p>
+						</div>
+						<div class="span4">
+							<select multiple class="show-tick guid" style="width: 100%" data-bind="options: ['placeholder', 'placeholder', 'placeholder']"></select>
+						</div>
+						<div class="span2">
+							<p><a class="btn btn-primary btn-small" style="width: 80%; margin-top: 25%">Remove</a></p>
+						</div>
+					</div>
+					<div class="row-fluid">
+						<div class="span2">
+							<span class="label spec-label">Constrained Delegation To:</span>
+						</div>
+						<div class="span8">
+							<select class="selectpicker show-tick guid" style="width: 100%" data-bind="options: ['placeholder', 'placeholder', 'placeholder']"></select>
+						</div>
+						<div class="span2">
+							<p><a class="btn btn-primary btn-small" style="width: 80%; margin-top: 2%">Add</a></p>
+						</div>
+					</div>
+					<div class="row-fluid">
+						<div class="span2">
+						</div>
+						<div class="span8">
+							<select multiple class="show-tick guid" style="width: 100%" data-bind="options: ['placeholder', 'placeholder', 'placeholder']"></select>
+						</div>
+						<div class="span2">
+							<p><a class="btn btn-primary btn-small" style="width: 80%; margin-top: 25%">Remove</a></p>
+						</div>
+					</div>
+					<div class="row-fluid">
+						<div class="span2">
+							<span class="label spec-label">Roles to Add:</span>
+						</div>
+						<div class="span8">
+							<input type="text" class="input-block-level" />
+						</div>
+						<div class="span2">
+							<p><a class="btn btn-primary btn-small" style="width: 80%; margin-top: 2%">Add</a></p>
+						</div>
+					</div>
+					<div class="row-fluid">
+						<div class="span2">
+						</div>
+						<div class="span8">
+							<select multiple class="show-tick guid" style="width: 100%" data-bind="options: ['placeholder', 'placeholder', 'placeholder']"></select>
+						</div>
+						<div class="span2">
+							<p><a class="btn btn-primary btn-small" style="width: 80%; margin-top: 25%">Remove</a></p>
+						</div>
+					</div>
+					<div class="row-fluid">
+						<div class="span2">
+							<span class="label spec-label">Selective Provisioning Contexts:</span>
+						</div>
+						<div class="span8">
+							<input type="text" class="input-block-level" />
+						</div>
+						<div class="span2">
+							<p><a class="btn btn-primary btn-small" style="width: 80%; margin-top: 2%">Add</a></p>
+						</div>
+					</div>
+					<div class="row-fluid">
+						<div class="span2">
+						</div>
+						<div class="span8">
+							<select multiple class="show-tick guid" style="width: 100%" data-bind="options: ['placeholder', 'placeholder', 'placeholder']"></select>
+						</div>
+						<div class="span2">
+							<p><a class="btn btn-primary btn-small" style="width: 80%; margin-top: 25%">Remove</a></p>
+						</div>
+					</div>
+					<hr>
+					<div class="pagination pagination-centered">
+						<a href="#" class="btn btn-primary pull-left">&laquo; Reset</a>
+						<a href="#" class="btn btn-primary pull-left" style="margin-left: 2%">Expert XML</a>
+						<a href="#" class="btn btn-primary pull-left" style="margin-left: 56%">Validate</a>
+						<a href="#" class="btn btn-primary pull-right">Submit Changes &raquo;</a>
+					</div>
+				</div>
+			</div>
+		</div>
+		
+		<!--Footer-->
+        <hr>
+        <div>
+            <p>© Chad Stewart 2013</p>
+        </div>
+    </div>
+    <!-- /container -->
+
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="./Scripts/custom-bindings.js"></script>
+    <script src="./Scripts/knockout-typeahead.js"></script>
+    <script src="./Scripts/sot.js"></script>
+    <script src="./Scripts/bootstrap-select.js"></script>
+    <script src="./Scripts/bootstrap-transition.js"></script>
+    <script src="./Scripts/bootstrap-alert.js"></script>
+    <script src="./Scripts/bootstrap-modal.js"></script>
+    <script src="./Scripts/bootstrap-dropdown.js"></script>
+    <script src="./Scripts/bootstrap-scrollspy.js"></script>
+    <script src="./Scripts/bootstrap-tab.js"></script>
+    <script src="./Scripts/bootstrap-tooltip.js"></script>
+    <script src="./Scripts/bootstrap-popover.js"></script>
+    <script src="./Scripts/bootstrap-button.js"></script>
+    <script src="./Scripts/bootstrap-collapse.js"></script>
+    <script src="./Scripts/bootstrap-carousel.js"></script>
+    <script src="./Scripts/bootstrap-typeahead.js"></script>
+
+</body>
+</html>
