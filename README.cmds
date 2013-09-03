@@ -1,0 +1,4 @@
+Run MongoDB:
+
+cd C:\Users\Chad\Downloads\mongodb-win32-x86_64-2.4.6\mongodb-win32-x86_64-2.4.6\bin
+mongod.exe --dbpath "C:\Users\Chad\Downloads\mongodb-win32-x86_64-2.4.6\mongodb-win32-x86_64-2.4.6\bin\data\db"
