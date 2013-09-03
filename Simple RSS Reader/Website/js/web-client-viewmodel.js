@@ -18,6 +18,15 @@ function SimpleWebClientViewModel() {
 			"Third Update",
 			3)
 		]);
+	
+	/* Reading a RSS feed
+	jQuery.getFeed({
+		url: 'rss.xml',
+		success: function(feed) {
+			alert(feed.title);
+		}
+	});
+	*/
 }
 
 (function ($, window, document) {
