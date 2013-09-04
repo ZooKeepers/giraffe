@@ -2,3 +2,18 @@ Run MongoDB:
 
 cd C:\Users\Chad\Downloads\mongodb-win32-x86_64-2.4.6\mongodb-win32-x86_64-2.4.6\bin
 mongod.exe --dbpath "C:\Users\Chad\Downloads\mongodb-win32-x86_64-2.4.6\mongodb-win32-x86_64-2.4.6\bin\data\db"
+
+Run the Node Server:
+
+<<Dylan please fill this out>>
+
+Run Chrome with disabled web security (for file/server testing):
+
+cd <where ever chrome.exe is on your system>
+	quick find: 
+		cd c:\
+		dir /s chrome.exe
+		<copy the location>
+		cd <location>
+		
+chrome.exe -disable-web-security

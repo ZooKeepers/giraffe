@@ -6,6 +6,7 @@ function RSSFeed(url, text, id) {
 
 function SimpleWebClientViewModel() {
     var vm = this;
+	var urlBase = 'http://localhost:3000/';
 	
 	vm.feeds = ko.observableArray([
 		new RSSFeed("http://www.google.com/rss",
@@ -18,6 +19,24 @@ function SimpleWebClientViewModel() {
 			"Third Update",
 			3)
 		]);
+	
+	vm.user = ko.observable({});
+	
+	function getUserInfo() {
+		$.ajax({
+		    url: urlBase + 'user',
+			dataType: "json",
+			success: function (data) {
+				vm.user({
+					username: data.username,
+					feeds: data.feeds,
+					id: data._id
+				});
+			}
+		});
+	}
+	
+	getUserInfo();
 	
 	/* Reading a RSS feed
 	jQuery.getFeed({

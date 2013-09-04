@@ -23,7 +23,15 @@
 					<dt data-bind="text: 'RSS ' + $index()"></dt>
 					<dd data-bind="text: $data.text"></dd>
 				</dl>
+				<hr>
+				<h2>This is User Info read from the Server</h2>
+				<p data-bind="text: 'Username: ' + user().username"></p>
+				<div data-bind="foreach: user().feeds">
+					<p data-bind="text: 'Feed ' + $index() + ': ' + url"></p>
+				</div>
+				<p data-bind="text: 'ID: ' + user().id"></p>
 		  </div>
+		  
 		</div>
 
 		<footer>
