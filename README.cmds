@@ -17,3 +17,14 @@ cd <where ever chrome.exe is on your system>
 		cd <location>
 		
 chrome.exe -disable-web-security
+===========================================================================================================================
+simpleParse.js Documentation:
+simpleParse takes in a URL, including the web portocol, pointing to an rss feed. It returns an array of items which
+contain the following attributes:
+title: Title of the article
+link: Link that points to the rss article
+description: The description of the article in the rss feed. This is typically in html as it contains some styling. 
+     May contain the entire article
+pubDate: Publishing date
+author: Article author
+===========================================================================================================================
