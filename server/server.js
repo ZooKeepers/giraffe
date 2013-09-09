@@ -1,5 +1,6 @@
 var express = require('express'),
-    mongo = require('mongodb');
+    mongo = require('mongodb'),
+    path = require('path');
 
 var app = express();
 
@@ -21,6 +22,10 @@ db.open(function(err, db) {
             });
         });
     }
+});
+
+app.configure(function() {
+    app.use(express.static(path.join(__dirname, '..',  'client')));
 });
 
 app.get('/user', function(req, res) {
