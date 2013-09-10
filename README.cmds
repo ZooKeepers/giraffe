@@ -3,9 +3,13 @@ Run MongoDB:
 cd C:\Users\Chad\Downloads\mongodb-win32-x86_64-2.4.6\mongodb-win32-x86_64-2.4.6\bin
 mongod.exe --dbpath "C:\Users\Chad\Downloads\mongodb-win32-x86_64-2.4.6\mongodb-win32-x86_64-2.4.6\bin\data\db"
 
-Run the Node Server:
+Run the Node Server (from the server directory):
+npm install (if the manifest has been changed)
+node server.js
 
-<<Dylan please fill this out>>
+if you have Supervisor (npm install supervisor -g) then run the server with:
+supervisor server.js
+(this will auto-reload the server when changes are made to the file)
 
 Run Chrome with disabled web security (for file/server testing):
 
