@@ -1,3 +1,43 @@
+var http = require('http'),
+    https = require('https'),
+    xml2js = require('xml2js'),
+    urlParser = require ('url');
+
+exports.parseRSS = dylansParseRSS;
+
+function dylansParseRSS(url, onResult) {
+    var parsedURL = urlParser.parse(url);
+
+    var protocol = parsedURL.protocol == "https" ? https : http;
+
+    var options = {
+        host: parsedURL.hostname,
+        port: parsedURL.port ? parsedURL.port : 80,
+        path: parsedURL.path,
+        method: 'GET'
+    };
+
+    var req = protocol.request(options, function(res) {
+        var output = '';
+        res.setEncoding('utf8');
+
+        res.on('data', function(chunk) {
+            output += chunk;
+        });
+
+        res.on('end', function() {
+            xml2js.parseString(output, function(err, result) {
+                onResult(err, result);
+            });
+        });
+    });
+
+    req.on('error', function(err) {
+    });
+
+    req.end();
+}
+
 function parseRSS(event){
     if(event.which==13||event.keyCode==13)
     {

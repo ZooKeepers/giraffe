@@ -1,6 +1,7 @@
 var express = require('express'),
     mongo = require('mongodb'),
-    path = require('path');
+    path = require('path'),
+    rss = require('./simpleParse.js');
 
 var app = express();
 
@@ -26,6 +27,12 @@ db.open(function(err, db) {
 
 app.configure(function() {
     app.use(express.static(path.join(__dirname, '..',  'client')));
+});
+
+app.get('/rss', function(req, res) {
+    rss.parseRSS('http://rss.nytimes.com/services/xml/rss/nyt/HomePage.xml', function(err, obj) {
+        res.send(obj);
+    });
 });
 
 app.get('/user', function(req, res) {
