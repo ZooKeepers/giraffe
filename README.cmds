@@ -5,6 +5,8 @@ mongod.exe --dbpath "C:\Users\Chad\Downloads\mongodb-win32-x86_64-2.4.6\mongodb-
 
 Run the Node Server (from the server directory):
 npm install (if the manifest has been changed)
+
+cd C:\Users\Chad\Documents\GitHub\giraffe\server
 node server.js
 
 if you have Supervisor (npm install supervisor -g) then run the server with:

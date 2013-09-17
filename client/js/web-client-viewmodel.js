@@ -36,8 +36,27 @@ function SimpleWebClientViewModel() {
 		});
 	}
 	
+	vm.feedItems = ko.observableArray([]);
+	
+	function getTestRSSFeed() {
+		$.ajax({
+		    url: urlBase + 'rss',
+			dataType: "json",
+			success: function (data) {
+				ko.utils.arrayForEach(data.rss.channel[0].item, function(item) {
+					vm.feedItems.push({
+						// link: item['atom:link'][0].$.href,
+						title: item.title[0]
+					});
+				});
+				
+			}
+		});
+	}
+	
 	getUserInfo();
 	
+	getTestRSSFeed();
 	/* Reading a RSS feed
 	jQuery.getFeed({
 		url: 'rss.xml',
