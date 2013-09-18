@@ -133,12 +133,10 @@ var populateDB = function() {
     {
         username: "dylan",
         feeds: [
-            {
-                url: "http://lol"
-            },
-            {
-                url: "http://notlol"
-            }
+            { url: 'http://rss.nytimes.com/services/xml/rss/nyt/HomePage.xml' },
+            { url: 'http://nobamazone.com/feed/' },
+            { url: 'http://omnifictruthcube.tumblr.com/rss' },
+            { url: 'http://feeds.theonion.com/theonion/daily' }
         ]
     }];
 
