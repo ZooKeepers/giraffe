@@ -1,0 +1,1 @@
+"%~dp0mongo\mongod.exe" --dbpath "%~dp0mongo\data"
