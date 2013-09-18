@@ -45,14 +45,27 @@ function SimpleWebClientViewModel() {
 			success: function (data) {
 				ko.utils.arrayForEach(data.rss.channel[0].item, function(item) {
 					vm.feedItems.push({
-						// link: item['atom:link'][0].$.href,
-						title: item.title[0]
+						feed: data.rss.channel[0].title[0],
+						description: item.description[0],
+						title: item.title[0],
+						author: item['dc:creator'][0]
 					});
+					
+					vm.y = 0;
 				});
 				
 			}
 		});
 	}
+	
+	// Utility functions for generating the href links for the Accordion Elements
+    vm.genAccLink = function (str, comp) {
+        return "#" + str + comp.replace(/\W/g, '');
+    };
+	
+    vm.genAccId = function (str, comp) {
+        return "" + str + comp.replace(/\W/g, '');
+    };
 	
 	getUserInfo();
 	

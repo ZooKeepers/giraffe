@@ -17,6 +17,7 @@
 	<div class="container">
 		<div class="row">
 			<div id="nav-bar-div" class="col-md-4">
+				<div style="padding-top: 15px;"></div>
 				<div class="row">
 					<ul class="nav nav-tabs">
 					  <li class="active"><a href="#">My Feeds</a></li>
@@ -111,16 +112,32 @@
 			<div id="main-div" class="col-md-8">
 				<div class="row">
 					<div class="col-md-7">
-						placeholder
+						<span><h3 style="margin-bottom: 0px;">All Feeds</h3></span>
+						<span class="text-muted">64 unread articles // <a href="#">Some-link</a></span>
 					</div>
 					<div class="col-md-5"> <!-- Search Bar and Icons here -->
-						placeholder
+						<h4>placeholder</h4>
 					</div>
 				</div>
 				<hr>
-				<h4>Pulled the titles from the NYT RSS Feed:</h4>
-				<div data-bind="foreach: feedItems">
-					<p data-bind="text: title"></p>
+				<div class="panel-group" id="artAcc" data-bind="foreach: feedItems">
+				  <div class="panel">
+					  <h4 class="panel-title">
+						<span class="text-muted glyphicon glyphicon-bookmark"> </span>
+						<a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#artAcc" 
+							data-bind="text: title, attr: { href: $root.genAccLink('artAcc', title) }">
+						</a>
+					  </h4>
+					<div id="collapseOne" class="panel-collapse collapse" style="height: 0px;" data-bind="attr: { id: $root.genAccId('artAcc', title) }">
+					  <div class="panel-body" >
+						<span class="text-muted glyphicon glyphicon-heart-empty"> </span>
+						<span class="text-muted" data-bind="text: feed + ' ' + author + ' // <time> // <sharing options>' "></span>
+						<h3 style="margin-top: 0px" data-bind="text: title"></h3>
+						<div data-bind="html: description">
+						</div>
+					  </div>
+					</div>
+				  </div>
 				</div>
 			</div>
 		</div>
