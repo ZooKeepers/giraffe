@@ -31,9 +31,50 @@ app.configure(function() {
 
 app.get('/rss', function(req, res) {
     rss.parseRSS('http://rss.nytimes.com/services/xml/rss/nyt/HomePage.xml', function(err, obj) {
+        //obj.rss.channel[0].item = 0;
+        //res.send(obj.rss.channel[0].item[0]);
         res.send(obj);
     });
 });
+
+app.get('/rssreload', function(req, res) {
+    rssReload(res);
+});
+
+function rssReload(res) {
+    var feeds = [
+        'http://rss.nytimes.com/services/xml/rss/nyt/HomePage.xml',
+        'http://nobamazone.com/feed/',
+        'http://omnifictruthcube.tumblr.com/rss',
+        'http://feeds.theonion.com/theonion/daily'
+    ];
+
+    if (res) {
+        res.send("Updating RSS feeds...");
+    }
+
+    db.collection('articles', function(err, collection) {
+        for (f in feeds) {
+            // closure for variable capture
+            (function() {
+                var feed = feeds[f];
+                rss.parseRSS(feeds[f], function(err, obj) {
+                    var items = obj.rss.channel[0].item;
+                    for (i in items) {
+                        var toInsert = {
+                            feed: feed,
+                            title: items[i].title[0],
+                            link: items[i].link[0],
+                            description: items[i].description[0]
+                        };
+
+                        collection.update({link: toInsert.link}, toInsert, {upsert: true}, function(err, result) {});
+                    }
+                });
+            })();
+        }
+    });
+};
 
 app.get('/user', function(req, res) {
     db.collection('users', function(err, collection) {
@@ -64,6 +105,8 @@ app.get('/articles/:url', function(req, res) {
             filter,
             {
                 feed: 1,
+                title: 1,
+                link: 1,
                 content: 1,
                 read_by: {
                     $elemMatch: { username: "dylan" }
@@ -103,7 +146,9 @@ var populateDB = function() {
         collection.insert(users, {safe:true}, function(err, result) {});
     });
 
-    var articles = [
+    rssReload();
+
+    /*var articles = [
         {
             feed: "http://lol",
             content: "lol",
@@ -123,7 +168,7 @@ var populateDB = function() {
 
     db.collection('articles', function(err, collection) {
         collection.insert(articles, {safe:true}, function(err, result) {});
-    });
+    });*/
 };
 
 app.listen(3000);

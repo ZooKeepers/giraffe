@@ -8,7 +8,7 @@ exports.parseRSS = dylansParseRSS;
 function dylansParseRSS(url, onResult) {
     var parsedURL = urlParser.parse(url);
 
-    var protocol = parsedURL.protocol == "https" ? https : http;
+    var protocol = parsedURL.protocol == "https:" ? https : http;
 
     var options = {
         host: parsedURL.hostname,
