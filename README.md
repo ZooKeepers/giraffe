@@ -27,7 +27,7 @@ To set up Giraffe on a local server:
 
 	Windows: Go to the directory where you installed Mongo DB (root directory), and run
 
-        %~dp0mongo\mongod.exe" --dbpath "%~dp0mongo\data"
+        %~dp0mongo\mongod.exe --dbpath %~dp0mongo\data
 
 4. **START NODE.JS**
 
