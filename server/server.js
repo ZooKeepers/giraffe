@@ -59,6 +59,19 @@ function rssReload(res) {
             (function() {
                 var feed = feeds[f];
                 rss.parseRSS(feeds[f], function(err, obj) {
+                    db.collection('feeds', function(err, collection) {
+                        var channel = obj.rss.channel[0];
+                        collection.update(
+                            {feed: feed},
+                            {
+                                feed: feed,
+                                title: channel.title[0],
+                                description: channel.description[0]
+                            },
+                            {upsert: true},
+                            function(err, result) {}
+                        );
+                    });
                     var items = obj.rss.channel[0].item;
                     for (i in items) {
                         var toInsert = {
@@ -81,6 +94,23 @@ app.get('/user', function(req, res) {
         collection.findOne({'username':'dylan'}, function(err, item) {
             res.send(item);
         });
+    });
+});
+app.get('/feed/:url', function(req, res) {
+    db.collection('feeds', function(err, collection) {
+        collection.find(
+            {feed: req.params.url},
+            {
+                feed: 1,
+                title: 1,
+                description: 1
+            },
+            function(err, item) {
+                item.toArray(function(err, array) {
+                    res.send(array);
+                });
+            }
+        );
     });
 });
 app.get('/articles', function(req, res) {
