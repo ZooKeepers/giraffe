@@ -107,7 +107,7 @@ app.get('/articles/:url', function(req, res) {
                 feed: 1,
                 title: 1,
                 link: 1,
-                content: 1,
+                description: 1,
                 read_by: {
                     $elemMatch: { username: "dylan" }
                 }
