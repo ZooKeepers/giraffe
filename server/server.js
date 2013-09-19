@@ -59,6 +59,7 @@ function rssReload(res) {
             (function() {
                 var feed = feeds[f];
                 rss.parseRSS(feeds[f], function(err, obj) {
+                    // Update feed info
                     db.collection('feeds', function(err, collection) {
                         var channel = obj.rss.channel[0];
                         collection.update(
@@ -72,13 +73,17 @@ function rssReload(res) {
                             function(err, result) {}
                         );
                     });
+
+                    // Update articles
                     var items = obj.rss.channel[0].item;
                     for (i in items) {
                         var toInsert = {
                             feed: feed,
                             title: items[i].title[0],
                             link: items[i].link[0],
-                            description: items[i].description[0]
+                            description: items[i].description[0],
+                            author: items[i]['dc:creator'] ? items[i]['dc:creator'][0] : "",
+                            pubDate: items[i].pubDate[0]
                         };
 
                         collection.update({link: toInsert.link}, toInsert, {upsert: true}, function(err, result) {});
@@ -138,6 +143,8 @@ app.get('/articles/:url', function(req, res) {
                 title: 1,
                 link: 1,
                 description: 1,
+                author: 1,
+                pubDate: 1,
                 read_by: {
                     $elemMatch: { username: "dylan" }
                 }
