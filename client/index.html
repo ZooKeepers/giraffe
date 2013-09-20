@@ -30,14 +30,14 @@
 					<a><h5><span class="glyphicon glyphicon-bookmark"> </span> Bookmarked</h5></a>
 					<a><h5 style="padding-left: 18px;">Organize...</h5></a>
 					<h5>.</h5>
-					<a><h5>
+					<a data-bind="click: showAllFeeds"><h5>
 						<span class="glyphicon glyphicon-align-justify"> </span> All Feeds
 						<span class="text-muted pull-right">105</span>
 					</h5></a>
 					<div class="panel-group" id="accordion">
 						<h5 style="margin-bottom: 0px">
 							<a data-toggle="collapse" data-parent="#accordion" href="#1">
-								<span class="glyphicon glyphicon-chevron-down"></span> First Category
+								<span class="glyphicon glyphicon-chevron-down"></span> First Category (placeholder)
 								<span class="text-muted pull-right">15</span>
 							</a>
 						</h5>
@@ -55,7 +55,7 @@
 						</div>
 						<h5 style="margin-bottom: 0px">
 							<a data-toggle="collapse" data-parent="#accordion" href="#2">
-								<span class="glyphicon glyphicon-chevron-down"></span> Second Category
+								<span class="glyphicon glyphicon-chevron-down"></span> Second Category (placeholder)
 								<span class="text-muted pull-right">48</span>
 							</a>
 						</h5>
@@ -78,22 +78,10 @@
 							</a>
 						</h5>
 						<div id="3" class="panel-collapse collapse">
-							<div style="padding: 0px 0px 0px 25px;">
-								<a><h5>
-									<span class="glyphicon glyphicon-filter"> </span> Feed Q
+							<div style="padding: 0px 0px 0px 25px;" data-bind="foreach: feeds">
+								<a data-bind="click: $root.changeFeed"><h5>
+									<span class="glyphicon glyphicon-filter"></span><span data-bind="text: title"></span>
 									<span class="text-muted pull-right">5</span>
-								</h5></a>
-								<a><h5>
-									<span class="glyphicon glyphicon-cutlery"> </span> Feed X
-									<span class="text-muted pull-right">18</span>
-								</h5></a>
-								<a><h5>
-									<span class="glyphicon glyphicon-euro"> </span> Feed W
-									<span class="text-muted pull-right">9</span>
-								</h5></a>
-								<a><h5>
-									<span class="glyphicon glyphicon-headphones"> </span> Feed %
-									<span class="text-muted pull-right">10</span>
 								</h5></a>
 							</div>
 						</div>
@@ -105,14 +93,14 @@
 					<a><h5 style="padding-left: 18px;">Themes</h5></a>
 					<a><h5 style="padding-left: 18px;">Support</h5></a>
 					<h5>.</h5>
-					<h5 style="padding-left: 18px;"><a>Account</a> (<a>Logout</a>)</h5>
+					<h5 style="padding-left: 18px;"><a data-bind="text: user().username"></a> (<a>Logout</a>)</h5>
 					<h5>.</h5>
 				</div>
 			</div>
 			<div id="main-div" class="col-md-8">
 				<div class="row">
 					<div class="col-md-7">
-						<span><h3 style="margin-bottom: 0px;">All Feeds</h3></span>
+						<span><h3 style="margin-bottom: 0px;" data-bind="text: currentFeed"></h3></span>
 						<span class="text-muted">64 unread articles // <a href="#">Some-link</a></span>
 					</div>
 					<div class="col-md-5"> <!-- Search Bar and Icons here -->
@@ -120,7 +108,7 @@
 					</div>
 				</div>
 				<hr>
-				<div class="panel-group" id="artAcc" data-bind="foreach: feedItems">
+				<div class="panel-group" id="artAcc" data-bind="foreach: displayedItems">
 				  <div class="panel">
 					  <h4 class="panel-title">
 						<span class="text-muted glyphicon glyphicon-bookmark"> </span>
@@ -131,7 +119,7 @@
 					<div id="collapseOne" class="panel-collapse collapse" style="height: 0px;" data-bind="attr: { id: $root.genAccId('artAcc', title) }">
 					  <div class="panel-body" >
 						<span class="text-muted glyphicon glyphicon-heart-empty"> </span>
-						<span class="text-muted" data-bind="text: feed + ' ' + author + ' // <time> // <sharing options>' "></span>
+						<span class="text-muted" data-bind="text: feed + ' ' + author + ' // ' + timestamp + ' // <sharing options>' "></span>
 						<h3 style="margin-top: 0px" data-bind="text: title"></h3>
 						<div data-bind="html: description">
 						</div>
