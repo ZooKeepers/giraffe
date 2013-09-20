@@ -44,7 +44,6 @@ app.get('/rssreload', function(req, res) {
 function rssReload(res) {
     var feeds = [
         'http://rss.nytimes.com/services/xml/rss/nyt/HomePage.xml',
-        'http://nobamazone.com/feed/',
         'http://omnifictruthcube.tumblr.com/rss',
         'http://feeds.theonion.com/theonion/daily'
     ];
@@ -171,7 +170,6 @@ var populateDB = function() {
         username: "dylan",
         feeds: [
             { url: 'http://rss.nytimes.com/services/xml/rss/nyt/HomePage.xml' },
-            { url: 'http://nobamazone.com/feed/' },
             { url: 'http://omnifictruthcube.tumblr.com/rss' },
             { url: 'http://feeds.theonion.com/theonion/daily' }
         ]
