@@ -6,7 +6,7 @@ function RSSFeed(url, text, id) {
 
 function SimpleWebClientViewModel() {
     var vm = this;
-	var urlBase = 'http://localhost:3000/';
+	var urlBase = 'http://' + window.location.hostname + ':3000/';
 	
 	vm.currentFeed = ko.observable('All Feeds');
 	vm.user = ko.observable({});
