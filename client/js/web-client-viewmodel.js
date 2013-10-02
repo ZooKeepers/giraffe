@@ -8,10 +8,30 @@ function SimpleWebClientViewModel() {
     var vm = this;
 	var urlBase = 'http://' + window.location.hostname + ':3000/';
 	
-	vm.currentFeed = ko.observable('All Feeds');
-	vm.user = ko.observable({});
+	vm.currentFeed = ko.observable('Giraffe RSS');
+	vm.user = ko.observable({ username: 'Login'	});
+	
 	vm.feeds = ko.observableArray([]);
-
+	vm.displayedItems = ko.observableArray([]);
+	
+	vm.loginUsername = ko.observable();
+	vm.loginPassword = ko.observable();
+	
+	vm.titleTagLine = ko.computed(
+		function() {
+			if(vm.user().username == 'Login')
+				return 'Login or play with some of the demo feeds // ';
+			
+			return '64 unread articles // ';
+	});
+	
+	vm.titleDisplayLine = ko.computed(function() {
+		if(vm.user().username == 'Login')
+			return 'Giraffe RSS';
+		
+		return vm.currentFeed();
+	});
+	
 	function getUserInfo() {
 		$.ajax({
 		    url: urlBase + 'user',
@@ -35,7 +55,24 @@ function SimpleWebClientViewModel() {
 		});
 	}
 	
-	vm.displayedItems = ko.observableArray([]);
+	
+	
+	// Attempt to log a user in
+	vm.attemptLogin = function () {
+		//alert('Username: ' + vm.loginUsername() + '\nPassword: ' + vm.loginPassword());
+		getUserInfo();
+	}
+	
+	vm.logout = function () {
+		vm.user({
+			username: 'Login'
+		});
+		
+		vm.displayedItems([]);
+		vm.feeds([]);
+		vm.loginUsername('');
+		vm.loginPassword('');
+	}
 	
 	// Changes the display to a specific feed
 	// bug: requeries atm, maybe cache instead?
@@ -61,6 +98,7 @@ function SimpleWebClientViewModel() {
 	// Get information about the current feeds
 	// -- Also pulls the items of that feed
 	function getFeedData() {
+		vm.currentFeed('All Feeds');
 		ko.utils.arrayForEach(vm.user().feeds, function(feed) {
 			$.ajax({
 				url: urlBase + 'feed/' + encodeURIComponent(feed.url),
@@ -109,7 +147,7 @@ function SimpleWebClientViewModel() {
         return "" + str + comp.replace(/\W/g, '');
     };
 	
-	getUserInfo();
+	
 }
 
 (function ($, window, document) {

@@ -8,6 +8,7 @@
 
     <title>Giraffe RSS Reader</title>
 
+	<link rel="stylesheet" href="./css/giraffe.css">
     <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css">
 	<link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-theme.min.css">
 	
@@ -93,21 +94,50 @@
 					<a><h5 style="padding-left: 18px;">Themes</h5></a>
 					<a><h5 style="padding-left: 18px;">Support</h5></a>
 					<h5>.</h5>
-					<h5 style="padding-left: 18px;"><a data-bind="text: user().username"></a> (<a>Logout</a>)</h5>
+					<h5 style="padding-left: 18px;"><a data-bind="text: user().username"></a> 
+						<!-- ko if: user().username != 'Login' -->
+							(<a data-bind="click: logout">Logout</a>)
+						<!-- /ko -->
+					</h5>
 					<h5>.</h5>
 				</div>
 			</div>
 			<div id="main-div" class="col-md-8">
 				<div class="row">
 					<div class="col-md-7">
-						<span><h3 style="margin-bottom: 0px;" data-bind="text: currentFeed"></h3></span>
-						<span class="text-muted">64 unread articles // <a href="#">Some-link</a></span>
+						<span><h3 style="margin-bottom: 0px;" data-bind="text: titleDisplayLine"></h3></span>
+						<span class="text-muted" data-bind="text: titleTagLine"></span><a href="#">Some-link</a>
 					</div>
 					<div class="col-md-5"> <!-- Search Bar and Icons here -->
-						<h4>placeholder</h4>
+						<h4 class="pull-right">
+							<span style="margin-top: 20px"class="glyphicon glyphicon-refresh"></span>
+							<span style="margin-top: 20px"class="glyphicon glyphicon-cog"></span>
+							<span style="margin-top: 20px"class="glyphicon glyphicon-circle-arrow-right"></span>
+						</h4>
 					</div>
 				</div>
-				<hr>
+				<hr style="margin-top: 10px; margin-bottom: 10px">
+				<div class="row" data-bind="visible: user().username == 'Login'">
+					<!-- Login Division -->
+					<div class="container col-md-6">
+					  <form class="form-signin" style="padding-top: 0px" data-bind="submit: attemptLogin">
+						<h3 style="margin-top: 5px">Please Login</h3>
+						<input type="text" class="form-control" placeholder="Username" data-bind="value: loginUsername">
+						<input type="password" class="form-control" placeholder="Password" data-bind="value: loginPassword">
+						<label class="checkbox">
+						  <input type="checkbox" value="remember-me"> Remember me
+						</label>
+						<button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+					  </form>
+					</div>
+					<div class="container col-md-6">
+						<h3 style="margin-top: 5px; margin-bottom: 5px">About Giraffe-RSS</h3>
+						This is information about giraffe-rss. This is information about giraffe-rss. This is information about giraffe-rss. This is information about giraffe-rss. This is information about giraffe-rss. This is information about giraffe-rss. This is information about giraffe-rss. This is information about giraffe-rss. This is information about giraffe-rss. This is information about giraffe-rss. 
+						This is information about giraffe-rss. This is information about giraffe-rss. This is information about giraffe-rss. This is information about giraffe-rss. This is information about giraffe-rss. This is information about giraffe-rss. This is information about giraffe-rss. This is information about giraffe-rss. This is information about giraffe-rss. This is information about giraffe-rss. 
+						This is information about giraffe-rss. This is information about giraffe-rss. This is information about giraffe-rss. This is information about giraffe-rss. This is information about giraffe-rss. This is information about giraffe-rss. This is information about giraffe-rss. This is information about giraffe-rss. This is information about giraffe-rss. This is information about giraffe-rss. 
+					</div>
+				</div>
+				<!-- /Login Div -->
 				<div class="panel-group" id="artAcc" data-bind="foreach: displayedItems">
 				  <div class="panel">
 					  <h4 class="panel-title">
@@ -129,27 +159,6 @@
 				</div>
 			</div>
 		</div>
-		
-		<!-- Main jumbotron for a primary marketing message or call to action
-		<div class="jumbotron">
-		  <div class="container">
-			<h1>Giraffe RSS Reader</h1>
-				<dl class="dl-horizontal" data-bind="foreach: feeds">
-					<dt data-bind="text: 'RSS ' + $index()"></dt>
-					<dd data-bind="text: $data.text"></dd>
-				</dl>
-				<hr>
-				<h2>This is User Info read from the Server</h2>
-				<p data-bind="text: 'Username: ' + user().username"></p>
-				<div data-bind="foreach: user().feeds">
-					<p data-bind="text: 'Feed ' + $index() + ': ' + url"></p>
-				</div>
-				<p data-bind="text: 'ID: ' + user().id"></p>
-		  </div>
-		  
-		</div>
-		-->
-
 	</div>
 	<footer>
 		<p>© ZooKeepers 2013</p>
