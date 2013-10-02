@@ -1,0 +1,52 @@
+Required:
+1) Heroku needs to be installed (https://toolbelt.heroku.com/)
+2) You will need a Heroku account
+3) Ping me after you make your heroku account so I can give you access to the giraffe-rss app 
+
+
+Pushing to Heroku:
+1) In  root run: heroku git:remote -a giraffe-rss
+    This will allow the current directory to be pushed to heroku.
+2) Try to push to heroku with the following command: git push heroku master
+    Check below if there are any errors
+
+Running locally:
+1) In root run: foreman start
+    This command should be installed with the toolbelt.
+2) Currently the server is set to localhost:3000, check if it is running!
+
+Errors:
+
+1) Warning: Permanently added the RSA host key for IP adress 'x.x.x.x' to the list of known hosts.
+Permission denied (publickey).
+fatal: Could not read from remote repository.
+
+Please make sure you have the correct access rights and the repository exits:
+
+1) Solution:
+  First, try run: heroku keys:add
+  if there is an option to add the: "id_rsa" key, select that option and repeat step 2 in "Pushing to Heroku".
+  
+  If this doesn't work, the source of the problem is if you don't have an id_rsa key. I resolved this with the following steps in git shell:
+  
+  1a) Change directory to: cd <Drive>:\Users\<User>\.ssh
+  1b) Generate a new key: ssh-keygen -t rsa -C <your email>
+  1c) You should be prompted for a name for the key you generated. Set the name to: id_rsa.pub
+  1d) Set up a password if you wish, then run: ssh-add id_rsa 
+      **Remember this password, you will need to use this password when you push. There are settings to get around it
+      I haven't looked too much into them.
+  
+  After creating the key try to repeat step 2 in "Pushing to Heroku". Enter the password for the id_rsa.pub file if you placed one.
+  Afterwards, If there nothing has been pulled, you should get an "Everything is up to date" message, else
+  your changes wil be pushed to Heroku!
+  
+2) Warning:
+    ! Heroku Git error, please try again shortly
+    ! See http://status.heroku.com for current Heroku platform status.
+    ! if the problem persits, please contact http://help. heroku.com and provide Request ID <ID>
+  fatal: Could not read from remote repository.
+  
+  Please make sure you have the correct access rights and the repository exists
+  
+2) Solution:
+  Try again, there is nothing wrong with the setup. If there are issue, submit a request ID as provided.
