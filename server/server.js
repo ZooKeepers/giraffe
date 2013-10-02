@@ -2,7 +2,8 @@ var express = require('express'),
     mongo = require('mongodb'),
     path = require('path'),
     rss = require('./simpleParse.js');
-
+    cronJob = require('cron').CronJob;
+	
 var app = express();
 
 var Server = mongo.Server,
@@ -11,6 +12,22 @@ var Server = mongo.Server,
 
 var server = new Server('localhost', 27017, {auto_reconnect: true});
 db = new Db('feaderdb', server);
+
+//have a guard variable
+//run every 5 mins
+
+var job = new cronJob({
+       cronTime: '00 59 23 * * 1-7', function() {
+       //call the RSS reload function
+        rssReload(null);
+    }, fucntion() {
+	 //This funciton is executed when the job stops
+    },
+       start: true, 
+      timeZone: "America/Los_Angeles"
+ });
+	
+job.start();
 
 db.open(function(err, db) {
     if (!err) {
