@@ -3,7 +3,7 @@ var express = require('express'),
     path = require('path'),
     rss = require('./simpleParse.js');
     cronJob = require('cron').CronJob;
-	
+
 var app = express();
 
 var Server = mongo.Server,
@@ -13,19 +13,18 @@ var Server = mongo.Server,
 var server = new Server('localhost', 27017, {auto_reconnect: true});
 db = new Db('feaderdb', server);
 
-//have a guard variable
-//run every 5 mins
-
+//run every 15 mins
 var job = new cronJob({
     //run our update every 30 minutes
-    cronTime: '00 30 * * * *', function() {
-    //call the RSS reload function
-    rssReload(null);
-}, fucntion() {
-    //This funciton is executed when the job stops
-},
-    start: true, 
-    timeZone: "America/Los_Angeles"
+    cronTime: '* */15 * * * *',
+    onTick: function() {
+        //call the RSS reload function
+        rssReload(null);
+    },
+    onComplete: function() {
+        //This funciton is executed when the job stops
+    },
+    start: true
 });
 
 db.open(function(err, db) {
@@ -58,6 +57,7 @@ app.get('/rssreload', function(req, res) {
 });
 
 function rssReload(res) {
+    console.log("running reload");
     var feeds = [
         'http://rss.nytimes.com/services/xml/rss/nyt/HomePage.xml',
         'http://omnifictruthcube.tumblr.com/rss',
