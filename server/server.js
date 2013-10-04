@@ -1,8 +1,12 @@
 var express = require('express'),
     mongo = require('mongodb'),
     path = require('path'),
-    rss = require('./simpleParse.js');
-    cronJob = require('cron').CronJob;
+    rss = require('./simpleParse.js'),
+    flash = require('connect-flash'),
+    cronJob = require('cron').CronJob,
+    passport = require('passport'),
+    LocalStrategy = require('passport-local').Strategy,
+    bcrypt = require('bcrypt-nodejs');
 
 var app = express();
 
@@ -16,7 +20,7 @@ db = new Db('feaderdb', server);
 //run every 15 mins
 var job = new cronJob({
     //run our update every 30 minutes
-    cronTime: '* */15 * * * *',
+    cronTime: '0 */15 * * * *',
     onTick: function() {
         //call the RSS reload function
         rssReload(null);
@@ -42,6 +46,71 @@ db.open(function(err, db) {
 
 app.configure(function() {
     app.use(express.static(path.join(__dirname, '..',  'client')));
+    app.use(express.cookieParser());
+    app.use(express.bodyParser());
+    app.use(express.session({ secret: 'I shot a man in Reno, just to watch him die' }));
+    app.use(flash());
+    app.use(passport.initialize());
+    app.use(passport.session());
+    app.use(app.router);
+});
+
+passport.use(new LocalStrategy(function(username, password, done) {
+    console.log("SOMEONE'S LOGGING IN")
+    db.collection('users', function(err, collection) {
+        collection.findOne({'username': username}, function(err, item) {
+            if (err) {
+                console.log("Authentication error");
+                return done(err);
+            }
+            if (!item) {
+                console.log("Bad username");
+                return done(null, false, { message: 'Incorrect username' });
+            }
+            if (!bcrypt.compareSync(password, item.passHash)) {
+                console.log("Bad password");
+                return done(null, false, { message: 'Incorrect password' });
+            }
+            console.log("Successful login: " + item.username);
+            return done(null, item);
+        });
+    });
+}));
+
+passport.serializeUser(function(user, done) {
+    console.log("Serializing: " + user.username);
+    done(null, user.username);
+});
+
+passport.deserializeUser(function(username, done) {
+    console.log("Deserializing " + username);
+    db.collection('users', function(err, collection) {
+        collection.findOne({'username': username}, function(err, item) {
+            done(err, item);
+        });
+    });
+});
+
+app.post('/login',
+    passport.authenticate('local',
+        {
+            successRedirect: '/logintest',
+            failureRedirect: '/logintest',
+            failureFlash: true
+        }
+    )
+);
+
+app.get('/login', function(req, res) {
+    res.send('<form action="/login" method="post"><div><label>Username:</label><input type="text" name="username"/></div><div><label>Password:</label><input type="password" name="password"/></div><div><input type="submit" value="Log In"/></div></form>');
+});
+
+app.get('/logintest', function(req, res) {
+    if (req.isAuthenticated()) {
+        res.send("Hello " + req.user.username);
+    } else {
+        res.send("Not authenticated :(");
+    }
 });
 
 app.get('/rss', function(req, res) {
@@ -109,12 +178,19 @@ function rssReload(res) {
     });
 };
 
+// TODO: STOP LEAKING PASSWORD HASH
 app.get('/user', function(req, res) {
-    db.collection('users', function(err, collection) {
+    /*db.collection('users', function(err, collection) {
         collection.findOne({'username':'dylan'}, function(err, item) {
             res.send(item);
         });
-    });
+    });*/
+
+    if (req.isAuthenticated()) {
+        res.send(req.user);
+    } else {
+        res.send({ error: "Not authenticated" });
+    }
 });
 app.get('/feed/:url', function(req, res) {
     db.collection('feeds', function(err, collection) {
@@ -188,7 +264,8 @@ var populateDB = function() {
             { url: 'http://rss.nytimes.com/services/xml/rss/nyt/HomePage.xml' },
             { url: 'http://omnifictruthcube.tumblr.com/rss' },
             { url: 'http://feeds.theonion.com/theonion/daily' }
-        ]
+        ],
+        passHash: bcrypt.hashSync("pass")
     }];
 
     db.collection('users', function(err, collection) {

@@ -7,6 +7,10 @@
         "express": "3.x",
         "mongodb": "x.x",
         "xml2js": "x.x",
-        "cron": "x.x"
+        "cron": "x.x",
+        "passport": "x.x",
+        "passport-local": "x.x",
+        "bcrypt-nodejs": "x.x",
+        "connect-flash": "x.x"
     }
 }
