@@ -120,10 +120,10 @@
 				<div class="row" data-bind="visible: user().username == 'Login'">
 					<!-- Login Division -->
 					<div class="container col-md-6">
-					  <form class="form-signin" style="padding-top: 0px" action="/login" method="post">
+					  <form class="form-signin" style="padding-top: 0px" data-bind="submit: attemptLogin">
 						<h3 style="margin-top: 5px">Please Login</h3>
-						<input type="text" class="form-control" placeholder="Username" data-bind="value: loginUsername" name="username">
-						<input type="password" class="form-control" placeholder="Password" data-bind="value: loginPassword" name="password">
+						<input type="text" class="form-control" placeholder="Username" data-bind="value: loginUsername">
+						<input type="password" class="form-control" placeholder="Password" data-bind="value: loginPassword">
 						<label class="checkbox">
 						  <input type="checkbox" value="remember-me"> Remember me
 						</label>

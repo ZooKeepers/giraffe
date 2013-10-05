@@ -38,7 +38,7 @@ function SimpleWebClientViewModel() {
 			dataType: "json",
 			success: function (data) {
 				vm.user({
-					username: toTitleCase(data.username),
+					username: data.username,
 					feeds: data.feeds,
 					id: data._id
 				});
@@ -55,12 +55,28 @@ function SimpleWebClientViewModel() {
 		});
 	}
 	
-	
-	
 	// Attempt to log a user in
 	vm.attemptLogin = function () {
-		//alert('Username: ' + vm.loginUsername() + '\nPassword: ' + vm.loginPassword());
-		getUserInfo();
+		
+		$.ajax({
+		    url: urlBase + 'login',
+			dataType: "application/x-www-form-urlencoded",
+			type: 'POST',
+			cache: false,
+			data: 'username=' + vm.loginUsername() + '&password=' + vm.loginPassword()
+		});
+		
+		$.ajax({
+		    url: urlBase + 'logintest',
+			success: function (data) {
+				var authed = data.match(/Hello.*/g);
+				
+				if(authed)
+					getUserInfo();
+				else
+					alert('Authentication failed.');
+			}
+		});
 	}
 	
 	vm.logout = function () {
