@@ -18,11 +18,11 @@
 	<div class="container">
 		<div class="row">
 			<div id="nav-bar-div" class="col-md-4">
-				<div style="padding-top: 15px;"></div>
+				<div style="padding-top: 27px;"></div>
 				<div class="row">
 					<ul class="nav nav-tabs">
-					  <li class="active"><a href="#">My Feeds</a></li>
-					  <li><a href="#">+Content</a></li>
+					  <li class="active"><a href="#" style="padding: 10px 20px; font-size: 20px;">My Feeds</a></li>
+					  <li><a href="#" style="padding: 10px 20px; font-size: 20px;">+Content</a></li>
 					</ul>
 				</div>
 				<div class="container" >
@@ -104,16 +104,27 @@
 			</div>
 			<div id="main-div" class="col-md-8">
 				<div class="row">
-					<div class="col-md-7">
+					<div class="col-md-5">
 						<span><h3 style="margin-bottom: 0px;" data-bind="text: titleDisplayLine"></h3></span>
-						<span class="text-muted" data-bind="text: titleTagLine"></span><a href="#">Some-link</a>
+						<span class="text-muted" data-bind="text: titleTagLine"></span>
+					</div>
+					<div class="col-md-2">
+						<h4 class="pull-right">
+							<a style="color: #333;"><span style="margin-top: 20px" class="glyphicon glyphicon-check"></span></a>
+							<a style="color: #333;"><span style="margin-top: 20px" class="glyphicon glyphicon-cog"></span></a>
+							<a style="color: #333;"><span style="margin-top: 20px" class="glyphicon glyphicon-refresh"></span></a>
+						</h4>
 					</div>
 					<div class="col-md-5"> <!-- Search Bar and Icons here -->
-						<h4 class="pull-right">
-							<span style="margin-top: 20px"class="glyphicon glyphicon-refresh"></span>
-							<span style="margin-top: 20px"class="glyphicon glyphicon-cog"></span>
-							<span style="margin-top: 20px"class="glyphicon glyphicon-circle-arrow-right"></span>
-						</h4>
+						<div style="padding-top: 8%"></div>
+						<div class="input-group">
+						  <input type="text" class="form-control" placeholder="Search Feeds">
+						  <span class="input-group-btn">
+							<button class="btn btn-default" type="button">
+								<span class="glyphicon glyphicon-search"></span>
+							</button>
+						  </span>
+						</div>	
 					</div>
 				</div>
 				<hr style="margin-top: 10px; margin-bottom: 10px">

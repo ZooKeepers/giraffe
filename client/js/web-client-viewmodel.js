@@ -37,6 +37,13 @@ function SimpleWebClientViewModel() {
 		    url: urlBase + 'user',
 			dataType: "json",
 			success: function (data) {
+				if(data.error) {
+					vm.user({
+						username: 'Login',
+						error: true
+					});
+					return;
+				}
 				vm.user({
 					username: data.username,
 					feeds: data.feeds,
@@ -66,17 +73,9 @@ function SimpleWebClientViewModel() {
 			data: 'username=' + vm.loginUsername() + '&password=' + vm.loginPassword()
 		});
 		
-		$.ajax({
-		    url: urlBase + 'logintest',
-			success: function (data) {
-				var authed = data.match(/Hello.*/g);
-				
-				if(authed)
-					getUserInfo();
-				else
-					alert('Authentication failed.');
-			}
-		});
+		getUserInfo();
+		
+		//Need way to alert failed login
 	}
 	
 	vm.logout = function () {
@@ -88,6 +87,14 @@ function SimpleWebClientViewModel() {
 		vm.feeds([]);
 		vm.loginUsername('');
 		vm.loginPassword('');
+		
+		$.ajax({
+		    url: urlBase + 'logout',
+			dataType: "application/x-www-form-urlencoded",
+			type: 'POST',
+			cache: false,
+			data: 'logout'
+		});
 	}
 	
 	// Changes the display to a specific feed
@@ -162,8 +169,8 @@ function SimpleWebClientViewModel() {
     vm.genAccId = function (str, comp) {
         return "" + str + comp.replace(/\W/g, '');
     };
-	
-	
+
+	getUserInfo();
 }
 
 (function ($, window, document) {
