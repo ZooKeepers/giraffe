@@ -6,7 +6,13 @@ function RSSFeed(url, text, id) {
 
 function SimpleWebClientViewModel() {
     var vm = this;
-	var urlBase = 'http://' + window.location.hostname + ':3000/';
+
+    var urlBase = "";
+    if (window.location.hostname == "giraffe-rss.herokuapp.com") {
+        urlBase = "https://giraffe-rss.herokuapp.com/"
+    } else {
+        urlBase = 'http://' + window.location.hostname + ':3000/';
+    }
 	
 	vm.currentFeed = ko.observable('Giraffe RSS');
 	vm.user = ko.observable({ username: 'Login'	});
@@ -181,3 +187,4 @@ function SimpleWebClientViewModel() {
 		
     });
 }($, window, document));
+
