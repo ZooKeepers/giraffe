@@ -117,6 +117,37 @@ app.get('/logout', function(req, res) {
     req.logout();
 });
 
+app.post('/user', function(req, res) {
+    var username = req.param('username');
+    var password = req.param('password');
+
+    var users = [
+    {
+        username: username,
+        feeds: [
+            { url: 'http://rss.nytimes.com/services/xml/rss/nyt/HomePage.xml' },
+            { url: 'http://omnifictruthcube.tumblr.com/rss' },
+            { url: 'http://feeds.theonion.com/theonion/daily' }
+        ],
+        passHash: bcrypt.hashSync(password)
+    }];
+
+    db.collection('users', function(err, collection) {
+        collection.insert(users, {safe:true}, function(err, result) {
+            if (err) {
+                res.send({error: err});
+            } else if (result.length != 1) {
+                res.send({error: "Bad database results"});
+            } else {
+                var toSend = result[0];
+                toSend.success = true;
+                delete toSend.passHash;
+                res.send(toSend);
+            }
+        });
+    });
+});
+
 app.get('/rss', function(req, res) {
     rss.parseRSS('http://rss.nytimes.com/services/xml/rss/nyt/HomePage.xml', function(err, obj) {
         //obj.rss.channel[0].item = 0;
