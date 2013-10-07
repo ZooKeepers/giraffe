@@ -108,8 +108,12 @@ app.get('/logintest', function(req, res) {
 });
 
 app.get('/logout', function(req, res) {
+    if (req.isAuthenticated()) {
+        res.send({sucess: true})
+    } else {
+        res.send({error: "Not authenticated"})
+    }
     req.logout();
-    res.redirect('/');
 });
 
 app.get('/rss', function(req, res) {
