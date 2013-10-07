@@ -99,6 +99,7 @@ app.get('/login', function(req, res) {
     res.send('<form action="/login" method="post"><div><label>Username:</label><input type="text" name="username"/></div><div><label>Password:</label><input type="password" name="password"/></div><div><input type="submit" value="Log In"/></div></form>');
 });
 
+// TODO: remove
 app.get('/logintest', function(req, res) {
     if (req.isAuthenticated()) {
         res.send("Hello " + req.user.username);
@@ -109,7 +110,7 @@ app.get('/logintest', function(req, res) {
 
 app.get('/logout', function(req, res) {
     if (req.isAuthenticated()) {
-        res.send({sucess: true})
+        res.send({success: true})
     } else {
         res.send({error: "Not authenticated"})
     }
