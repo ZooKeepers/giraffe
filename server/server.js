@@ -92,13 +92,7 @@ passport.deserializeUser(function(username, done) {
 });
 
 app.post('/login',
-    passport.authenticate('local',
-        {
-            successRedirect: '/logintest',
-            failureRedirect: '/logintest',
-            failureFlash: true
-        }
-    )
+    passport.authenticate('local', null)
 );
 
 app.get('/login', function(req, res) {
@@ -111,6 +105,11 @@ app.get('/logintest', function(req, res) {
     } else {
         res.send("Not authenticated :(");
     }
+});
+
+app.get('/logout', function(req, res) {
+    req.logout();
+    res.redirect('/');
 });
 
 app.get('/rss', function(req, res) {
