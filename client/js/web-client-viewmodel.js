@@ -82,8 +82,34 @@ function SimpleWebClientViewModel() {
 		getUserInfo();
 		
 		//Need way to alert failed login
+		vm.loginUsername('');
+		vm.loginPassword('');
 	}
 	
+	vm.registerAccount = function() {
+		
+		var data = $.ajax({
+		    url: urlBase + 'user',
+			dataType: "application/x-www-form-urlencoded",
+			type: 'POST',
+			cache: false,
+			data: 'username=' + vm.loginUsername() + '&password=' + vm.loginPassword(),
+		});
+		
+		if(vm.loginUsername() != '' 
+			&& vm.loginPassword() != '' 
+			&& typeof vm.loginPassword() != 'undefined' 
+			&& typeof vm.loginUsername() != 'undefined')
+			
+			alert('User account ' + vm.loginUsername() + ' created.\nYou may now login.');
+		else
+			alert('Username or password was not sufficient.');
+			
+		vm.loginUsername('');
+		vm.loginPassword('');
+	}
+	
+	// Logs out the current user
 	vm.logout = function () {
 		vm.user({
 			username: 'Login'
@@ -96,10 +122,11 @@ function SimpleWebClientViewModel() {
 		
 		$.ajax({
 		    url: urlBase + 'logout',
-			dataType: "application/x-www-form-urlencoded",
-			type: 'POST',
-			cache: false,
-			data: 'logout'
+			dataType: "json",
+			success: function (data) {
+				if(data.error)
+					alert(data.error);
+			}
 		});
 	}
 	
