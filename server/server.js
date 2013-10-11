@@ -117,6 +117,7 @@ app.get('/logout', function(req, res) {
     req.logout();
 });
 
+// Create new user
 app.post('/user', function(req, res) {
     var username = req.param('username');
     var password = req.param('password');
@@ -144,6 +145,15 @@ app.post('/user', function(req, res) {
                 delete toSend.passHash;
                 res.send(toSend);
             }
+        });
+    });
+});
+
+app.delete('/user', function(req, res) {
+    db.collection('users', function(err, collection) {
+        collection.remove({'username':req.user.username}, function(err, item) {
+            res.send(item);
+            req.logout();
         });
     });
 });
