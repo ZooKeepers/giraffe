@@ -20,18 +20,17 @@
         <div class="panel-group" id="artAcc" data-bind="foreach: users">
           <div class="panel">
               <h4 class="panel-title">
-                <span class="text-muted glyphicon glyphicon-bookmark"> </span>
+                <span class="text-muted glyphicon glyphicon-user"> </span>
                 <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#artAcc" 
 					data-bind="text: username, attr: { href: $root.genAccLink('artAcc', username) }">
                 </a>
               </h4>
 		      <div id="collapseOne" class="panel-collapse collapse" style="height: 0px;" data-bind="attr: { id: $root.genAccId('artAcc', username) }">
               <div class="panel-body" >
-                <span class="text-muted glyphicon glyphicon-heart-empty"> </span>
-                <span class="text-muted" data-bind="text: username + ' ' + id + 'TEST' "></span>
-                <h3 style="margin-top: 0px" data-bind="text: username"></h3>
-                    <div data-bind="text: username + ' ' + id">
-                </div>
+                <h5 data-bind="text: id "></h5>
+                <h5 data-bind="text: id "></h5>
+                <a data-bind="click: $root.deleteUser.bind($data, username)"">Delete Account</a>
+                <a data-bind="click: $root.resetPassword">Reset Password</a>
               </div>
             </div>
           </div>

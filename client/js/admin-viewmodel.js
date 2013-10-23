@@ -18,19 +18,35 @@ function SimpleWebClientViewModel() {
 	
     vm.getAllUsers = function() {
 		$.ajax({
-		    url: urlBase + 'user',
+		    url: urlBase + 'users',
 			dataType: "json",
 			success: function (data) {
-				//ko.utils.arrayForEach(data, function(item) {
+                console.log(data);
+				ko.utils.arrayForEach(data, function(item) {
+                    console.log(item);
 					vm.users.push({
-						username: data.username,
-						id: data._id
+						username: item.username,
+						id: item._id
 					});
-                    
-                    //console.log(item);
-				//});
+				});
 			}
 		});
+    }
+    
+    vm.deleteUser = function(username) {
+        console.log(username);
+		$.ajax({
+		    url: urlBase + 'user/' + username,
+            type: 'DELETE',
+			dataType: "json",
+			success: function (data) {
+				if(data.error)
+					alert(data.error);
+			}
+		});    }
+    
+    vm.resetPassword = function() {
+        alert('Reset Password');
     }
     
     // Utility functions for generating the href links for the Accordion Elements
