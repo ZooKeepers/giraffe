@@ -69,7 +69,7 @@ passport.use(new LocalStrategy(function(username, password, done) {
     db.collection('users', function(err, collection) {
         collection.findOne({'username': username}, function(err, item) {
             if (err) {
-                console.log("Authentication error");
+                console.log("Authentication error: "+err);
                 return done(err);
             }
             if (!item) {
