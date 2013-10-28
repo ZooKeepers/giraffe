@@ -67,6 +67,7 @@ app.configure(function() {
 passport.use(new LocalStrategy(function(username, password, done) {
     console.log("SOMEONE'S LOGGING IN")
     db.collection('users', function(err, collection) {
+        console.log("collection: "+collection);
         collection.findOne({'username': username}, function(err, item) {
             if (err) {
                 console.log("Authentication error: "+err);
