@@ -68,6 +68,8 @@ passport.use(new LocalStrategy(function(username, password, done) {
     console.log("SOMEONE'S LOGGING IN")
     db.collection('users', function(err, collection) {
         console.log("collection: "+collection);
+        console.log("username: " + username);
+        console.log("");
         collection.findOne({'username': username}, function(err, item) {
             if (err) {
                 console.log("Authentication error: "+err);
@@ -351,7 +353,6 @@ var populateDB = function() {
         collection.insert(articles, {safe:true}, function(err, result) {});
     });*/
 };
-db.close();
 var port = process.env.PORT || 3000;
 app.listen(port, function(){
 console.log("Listening on "+port);});
