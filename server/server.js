@@ -13,17 +13,7 @@ var mongoUri= process.env.MONGOLAB_URI||'mongodb://heroku_app18429032:vlkr2be9re
 console.log("URI: "+mongoUri+"\n");
 var app = express();
 
-/* At the top, with other redirect methods before other routes */
-app.get('/index.html', function (req, res, next) {
-    if (req.get('x-forwarded-proto') != "https") {
-        res.set('x-forwarded-proto', 'https');
-        res.redirect('https://' + req.get('host') + req.url);
-    }
-    else
-    {
-    next();
-    }
-});
+
 
 var Server = mongo.Server,
     Db = mongo.Db,
@@ -316,6 +306,18 @@ app.get('/articles/:url', function(req, res) {
             }
         );
     });
+});
+
+/* At the top, with other redirect methods before other routes */
+app.get('*', function (req, res, next) {
+    if (req.get('x-forwarded-proto') != "https") {
+        res.set('x-forwarded-proto', 'https');
+        res.redirect('https://' + req.get('host') + req.url);
+    }
+    else
+    {
+    next();
+    }
 });
 /*app.get('/article/:article_id', function(req, res) {
     db.collection('articles', function(err, collection) {
