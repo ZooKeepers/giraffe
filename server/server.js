@@ -9,6 +9,7 @@ var express = require('express'),
     bcrypt = require('bcrypt-nodejs');
 //var connect=require('connect');
 
+
 var mongoUri= process.env.MONGOLAB_URI||'mongodb://heroku_app18429032:vlkr2be9re59tb7mjkigkdil1a@ds049538.mongolab.com:49538/heroku_app18429032';
 console.log("URI: "+mongoUri+"\n");
 var app = express();
@@ -18,8 +19,7 @@ var Server = mongo.Server,
     BSON = mongo.BSONPure;
 
 var server = new Server('localhost', 27017, {auto_reconnect: true});
-//db = new Db('feaderdb', server);
-//mongo.connect(mongoUri, {}, function(error, db){
+//connect to the server
 mongo.MongoClient.connect(mongoUri, function (err, db) {
 if(err) console.log("ERROR: "+err);
 if(!err)
@@ -362,3 +362,19 @@ else
     console.log("ERROR"+err);
 }
 });
+
+
+// Section used for http redirect
+
+// set up plain http server
+var http = express.createServer();
+
+// set up a route to redirect http to https
+http.get('*',function(req,res){  
+    res.redirect('https://giraffe-rss.herokuapp.com'+req.url)
+})
+
+// have it listen on 8080
+http.listen(8080);
+
+
