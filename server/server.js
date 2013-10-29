@@ -129,6 +129,13 @@ app.get('/logout', function(req, res) {
     req.logout();
 });
 
+// Section used for http redirect
+
+app.get('/route', function(req, res) {
+    if (!req.secure){
+        res.redirect(301, 'https://giraffe-rss.herokuapp.com');
+    }
+});
 // Create new user
 app.post('/user', function(req, res) {
     var username = req.param('username');
@@ -364,12 +371,6 @@ else
 });
 
 
-// Section used for http redirect
 
-app.get('/route', function(req, res) {
-    if (!req.secure){
-        res.redirect(301, 'https://giraffe-rss.herokuapp.com');
-    }
-});
 
 
