@@ -121,7 +121,7 @@ app.all('*', function (req, res, next) {
 app.all('*', function(req, res, next)
 {
     console.log("URL:" +res.url);
-     filePath = __dirname + '../client/'+res.url;
+     filePath = path.join(__dirname,'../client/',res.url);
 
     if (path.existsSync(filePath))
     {
