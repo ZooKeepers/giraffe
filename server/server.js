@@ -13,16 +13,6 @@ var mongoUri= process.env.MONGOLAB_URI||'mongodb://heroku_app18429032:vlkr2be9re
 console.log("URI: "+mongoUri+"\n");
 var app = express();
 
-app.get('/', function (req, res, next) {
-    if (req.get('x-forwarded-proto') != "https") {
-        res.set('x-forwarded-proto', 'https');
-        res.redirect('https://' + req.get('host') + req.url);
-    }
-    else
-    {
-    next();
-    }
-});
 
 var Server = mongo.Server,
     Db = mongo.Db,
@@ -114,6 +104,19 @@ passport.deserializeUser(function(username, done) {
         });
     });
 });
+
+//Redirect
+app.get('/', function (req, res, next) {
+    if (req.get('x-forwarded-proto') != "https") {
+        res.set('x-forwarded-proto', 'https');
+        res.redirect('https://' + req.get('host') + req.url);
+    }
+    else
+    {
+    next();
+    }
+});
+
 
 app.post('/login',
     passport.authenticate('local', null)
