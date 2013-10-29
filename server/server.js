@@ -19,6 +19,10 @@ app.get('*', function (req, res, next) {
         res.set('x-forwarded-proto', 'https');
         res.redirect('https://' + req.get('host') + req.url);
     }
+    else
+    {
+    next();
+    }
 });
 
 var Server = mongo.Server,
