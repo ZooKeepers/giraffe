@@ -15,11 +15,15 @@ console.log("URI: "+mongoUri+"\n");
 var app = express();
 
 /* At the top, with other redirect methods before other routes */
-app.use(function(req, res, next) {
-if(!req.secure) {
-return res.redirect('https://' + req.get('Host') + req.url);
-}
-next();
+/* At the top, with other redirect methods before other routes */
+app.get('*', function (req, res, next) {
+//http://docs.aws.amazon.com/ElasticLoadBalancing/latest/DeveloperGuide/TerminologyandKeyConcepts.html#x-forwarded-proto
+    if (req.get('x-forwarded-proto') != "https") {
+        res.set('x-forwarded-proto', 'https');
+        res.redirect('https://' + req.get('host') + req.url);
+    } else {
+        next();     
+    }
 });
 
 var Server = mongo.Server,
