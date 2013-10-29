@@ -104,6 +104,19 @@ passport.deserializeUser(function(username, done) {
     });
 });
 
+
+
+app.all('*', function (req, res, next) {
+    if (req.get('x-forwarded-proto') != "https") {
+        res.set('x-forwarded-proto', 'https');
+        res.redirect('https://' + req.get('host') + req.url);
+    }
+    else
+    {
+    next();
+    }
+});
+
 //Redirect
 app.all('*', function(req, res, next)
 {
@@ -119,18 +132,6 @@ app.all('*', function(req, res, next)
        next();
     }
 });
-
-app.all('*', function (req, res, next) {
-    if (req.get('x-forwarded-proto') != "https") {
-        res.set('x-forwarded-proto', 'https');
-        res.redirect('https://' + req.get('host') + req.url);
-    }
-    else
-    {
-    next();
-    }
-});
-
 
 
 app.post('/login',
