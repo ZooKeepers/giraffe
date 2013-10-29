@@ -13,7 +13,16 @@ var mongoUri= process.env.MONGOLAB_URI||'mongodb://heroku_app18429032:vlkr2be9re
 console.log("URI: "+mongoUri+"\n");
 var app = express();
 
-
+app.get('/', function (req, res, next) {
+    if (req.get('x-forwarded-proto') != "https") {
+        res.set('x-forwarded-proto', 'https');
+        res.redirect('https://' + req.get('host') + req.url);
+    }
+    else
+    {
+    next();
+    }
+});
 
 var Server = mongo.Server,
     Db = mongo.Db,
@@ -66,16 +75,7 @@ app.configure(function() {
     app.use(app.router);
 });
 /* At the top, with other redirect methods before other routes */
-app.all('*', function (req, res, next) {
-    if (req.get('x-forwarded-proto') != "https") {
-        res.set('x-forwarded-proto', 'https');
-        res.redirect('https://' + req.get('host') + req.url);
-    }
-    else
-    {
-    next();
-    }
-});
+
 passport.use(new LocalStrategy(function(username, password, done) {
     console.log("SOMEONE'S LOGGING IN")
     db.collection('users', function(err, collection) {
