@@ -14,11 +14,19 @@ var mongoUri= process.env.MONGOLAB_URI||'mongodb://heroku_app18429032:vlkr2be9re
 console.log("URI: "+mongoUri+"\n");
 var app = express();
 
+/* At the top, with other redirect methods before other routes */
+app.use(function(req, res, next) {
+if(!req.secure) {
+return res.redirect('https://' + req.get('Host') + req.url);
+}
+next();
+});
+
 var Server = mongo.Server,
     Db = mongo.Db,
     BSON = mongo.BSONPure;
 
-var server = new Server('localhost', 27017, {auto_reconnect: true});
+//var server = new Server('localhost', 27017, {auto_reconnect: true});
 //connect to the server
 mongo.MongoClient.connect(mongoUri, function (err, db) {
 if(err) console.log("ERROR: "+err);
@@ -102,20 +110,7 @@ passport.deserializeUser(function(username, done) {
         });
     });
 });
-/* At the top, with other redirect methods before other routes */
-app.get('*',function(req,res,next){
-    console.log("REDIRECTING");
-  if(req.headers['x-forwarded-proto']!='https')
-  {
-    console.log("redirect successful");
-    res.redirect('https://giraffe-rss.herokuapp.com'+req.url)
-  }
-  else
-  {
-    console.log("redirect unsucessful");
-    next() /* Continue to other routes if we're not redirecting */
-    }
-})
+
 
 app.post('/login',
     passport.authenticate('local', null)
