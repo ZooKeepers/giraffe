@@ -9,26 +9,17 @@ var express = require('express'),
     bcrypt = require('bcrypt-nodejs');
 //var connect=require('connect');
 
-
 var mongoUri= process.env.MONGOLAB_URI||'mongodb://heroku_app18429032:vlkr2be9re59tb7mjkigkdil1a@ds049538.mongolab.com:49538/heroku_app18429032';
 console.log("URI: "+mongoUri+"\n");
 var app = express();
-
-/* At the top, with other redirect methods before other routes */
-/* At the top, with other redirect methods before other routes */
-/**app.get('*', function (req, res, next) {
-    if (req.get('x-forwarded-proto') != "https") {
-        res.set('x-forwarded-proto', 'https');
-        res.redirect('https://' + req.get('host') + req.url);
-    }
-});*/
 
 var Server = mongo.Server,
     Db = mongo.Db,
     BSON = mongo.BSONPure;
 
-//var server = new Server('localhost', 27017, {auto_reconnect: true});
-//connect to the server
+var server = new Server('localhost', 27017, {auto_reconnect: true});
+//db = new Db('feaderdb', server);
+//mongo.connect(mongoUri, {}, function(error, db){
 mongo.MongoClient.connect(mongoUri, function (err, db) {
 if(err) console.log("ERROR: "+err);
 if(!err)
@@ -77,6 +68,8 @@ passport.use(new LocalStrategy(function(username, password, done) {
     console.log("SOMEONE'S LOGGING IN")
     db.collection('users', function(err, collection) {
         console.log("collection: "+collection);
+        console.log("username: " + username);
+        console.log("");
         collection.findOne({'username': username}, function(err, item) {
             if (err) {
                 console.log("Authentication error: "+err);
@@ -110,7 +103,6 @@ passport.deserializeUser(function(username, done) {
     });
 });
 
-
 app.post('/login',
     passport.authenticate('local', null)
 );
@@ -136,7 +128,6 @@ app.get('/logout', function(req, res) {
     }
     req.logout();
 });
-
 
 // Create new user
 app.post('/user', function(req, res) {
@@ -362,7 +353,6 @@ var populateDB = function() {
         collection.insert(articles, {safe:true}, function(err, result) {});
     });*/
 };
-db.close();
 var port = process.env.PORT || 3000;
 app.listen(port, function(){
 console.log("Listening on "+port);});
@@ -372,8 +362,3 @@ else
     console.log("ERROR"+err);
 }
 });
-
-
-
-
-
