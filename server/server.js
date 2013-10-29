@@ -104,7 +104,7 @@ passport.deserializeUser(function(username, done) {
     });
 });
 
-/*Redirect
+//Redirect
 app.all('*', function (req, res, next) {
     if (req.get('x-forwarded-proto') != "https") {
         res.set('x-forwarded-proto', 'https');
@@ -114,24 +114,7 @@ app.all('*', function (req, res, next) {
     {
     next();
     }
-});*/
-function requireSecure(req, res, next){
-  if(!req.secure){
-    var port = app.myConfig.httpsPort || 443;
-    if(port != 443){
-      res.redirect('https://'+req.host+':'+port+req.originalUrl);
-      console.log('redirecting to https://'+req.host+':'+port+req.originalUrl);
-    } else {
-      res.redirect('https://'+req.host+req.originalUrl);
-      console.log('redirecting to https://'+req.host+req.originalUrl);
-    };   
-  } else {
-    next();
-  };   
-}
-
-// place before any other route to ensure all requests https
-app.all('*', requireSecure); 
+});
 
 
 app.post('/login',
@@ -396,8 +379,3 @@ else
 }
 });
 
-// Listen to both http and https protocols:
-var http  = require('http');
-var https = require('https');
-http.createServer(app).listen(80);
-https.createServer(options, app).listen(443);
