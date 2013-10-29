@@ -65,7 +65,17 @@ app.configure(function() {
     app.use(passport.session());
     app.use(app.router);
 });
-
+/* At the top, with other redirect methods before other routes */
+app.get('*', function (req, res, next) {
+    if (req.get('x-forwarded-proto') != "https") {
+        res.set('x-forwarded-proto', 'https');
+        res.redirect('https://' + req.get('host') + req.url);
+    }
+    else
+    {
+    next();
+    }
+});
 passport.use(new LocalStrategy(function(username, password, done) {
     console.log("SOMEONE'S LOGGING IN")
     db.collection('users', function(err, collection) {
@@ -308,17 +318,7 @@ app.get('/articles/:url', function(req, res) {
     });
 });
 
-/* At the top, with other redirect methods before other routes */
-app.get('*', function (req, res, next) {
-    if (req.get('x-forwarded-proto') != "https") {
-        res.set('x-forwarded-proto', 'https');
-        res.redirect('https://' + req.get('host') + req.url);
-    }
-    else
-    {
-    next();
-    }
-});
+
 /*app.get('/article/:article_id', function(req, res) {
     db.collection('articles', function(err, collection) {
         collection.findOne({id:req.params.article_id}, function(err, item) {
@@ -367,7 +367,7 @@ var populateDB = function() {
         collection.insert(articles, {safe:true}, function(err, result) {});
     });*/
 };
-var port = process.env.PORT || 3000;
+var port = process.env.PORT || 5000;
 app.listen(port, function(){
 console.log("Listening on "+port);});
 }
