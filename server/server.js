@@ -64,7 +64,6 @@ app.configure(function() {
     app.use(passport.session());
     app.use(app.router);
 });
-/* At the top, with other redirect methods before other routes */
 
 passport.use(new LocalStrategy(function(username, password, done) {
     console.log("SOMEONE'S LOGGING IN")
@@ -105,8 +104,8 @@ passport.deserializeUser(function(username, done) {
     });
 });
 
-//Redirect
-app.get('/', function (req, res, next) {
+/*Redirect
+app.all('*', function (req, res, next) {
     if (req.get('x-forwarded-proto') != "https") {
         res.set('x-forwarded-proto', 'https');
         res.redirect('https://' + req.get('host') + req.url);
@@ -115,7 +114,24 @@ app.get('/', function (req, res, next) {
     {
     next();
     }
-});
+});*/
+function requireSecure(req, res, next){
+  if(!req.secure){
+    var port = app.myConfig.httpsPort || 443;
+    if(port != 443){
+      res.redirect('https://'+req.host+':'+port+req.originalUrl);
+      console.log('redirecting to https://'+req.host+':'+port+req.originalUrl);
+    } else {
+      res.redirect('https://'+req.host+req.originalUrl);
+      console.log('redirecting to https://'+req.host+req.originalUrl);
+    };   
+  } else {
+    next();
+  };   
+}
+
+// place before any other route to ensure all requests https
+app.all('*', requireSecure); 
 
 
 app.post('/login',
@@ -379,3 +395,9 @@ else
     console.log("ERROR"+err);
 }
 });
+
+// Listen to both http and https protocols:
+var http  = require('http');
+var https = require('https');
+http.createServer(app).listen(80);
+https.createServer(options, app).listen(443);
