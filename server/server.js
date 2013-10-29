@@ -14,7 +14,7 @@ console.log("URI: "+mongoUri+"\n");
 var app = express();
 
 /* At the top, with other redirect methods before other routes */
-app.get('*', function (req, res, next) {
+app.get('/index.html', function (req, res, next) {
     if (req.get('x-forwarded-proto') != "https") {
         res.set('x-forwarded-proto', 'https');
         res.redirect('https://' + req.get('host') + req.url);
