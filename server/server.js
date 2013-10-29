@@ -366,15 +366,10 @@ else
 
 // Section used for http redirect
 
-// set up plain http server
-var http = express.createServer();
-
-// set up a route to redirect http to https
-http.get('*',function(req,res){  
-    res.redirect('https://giraffe-rss.herokuapp.com'+req.url)
-})
-
-// have it listen on 8080
-http.listen(8080);
+app.get('/route', function(req, res) {
+    if (!req.secure){
+        res.redirect(301, 'https://giraffe-rss.herokuapp.com');
+    }
+});
 
 
