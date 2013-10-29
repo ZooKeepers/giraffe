@@ -104,10 +104,17 @@ passport.deserializeUser(function(username, done) {
 });
 /* At the top, with other redirect methods before other routes */
 app.get('*',function(req,res,next){
+    console.log("REDIRECTING");
   if(req.headers['x-forwarded-proto']!='https')
+  {
+    console.log("redirect successful");
     res.redirect('https://giraffe-rss.herokuapp.com'+req.url)
+  }
   else
+  {
+    console.log("redirect unsucessful");
     next() /* Continue to other routes if we're not redirecting */
+    }
 })
 
 app.post('/login',
