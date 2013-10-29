@@ -55,7 +55,7 @@ var job = new cronJob({
     }
 
 app.configure(function() {
-    //app.use(express.static(path.join(__dirname, '..',  'client')));
+    app.use(express.static(path.join(__dirname, '..',  'client')));
     app.use(express.cookieParser());
     app.use(express.bodyParser());
     app.use(express.session({ secret: 'I shot a man in Reno, just to watch him die' }));
@@ -105,7 +105,7 @@ passport.deserializeUser(function(username, done) {
 });
 
 
-
+//redirect to https
 app.all('*', function (req, res, next) {
     if (req.get('x-forwarded-proto') != "https") {
         res.set('x-forwarded-proto', 'https');
@@ -117,11 +117,11 @@ app.all('*', function (req, res, next) {
     }
 });
 
-//Redirect
+/*Redirect any static file requests
 app.all('*', function(req, res, next)
 {
     console.log("URL:" +res.url);
-     filePath = __dirname+'/../client/'+res.url);
+     filePath = __dirname+'/../client/',res.url);
 
     if (path.existsSync(filePath))
     {
@@ -131,7 +131,7 @@ app.all('*', function(req, res, next)
     {
        next();
     }
-});
+});*/
 
 
 app.post('/login',
