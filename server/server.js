@@ -364,20 +364,33 @@ app.get('/articles/:url', function(req, res) {
 
 app.put('/articles', function(req, res) {
     if (req.isAuthenticated()) {
-        if (req.body.read || req.body.starred) {
+        if (req.body.addRead || req.body.addStarred || req.body.removeRead || req.body.removeStarred) {
             db.collection('articles', function(err, collection) {
-                for (r in req.body.read) {
-                    console.log(req.body.read[r]);
+                for (r in req.body.addRead) {
                     collection.update(
-                        {_id: mongo.ObjectID(req.body.read[r]._id)},
+                        {_id: mongo.ObjectID(req.body.addRead[r]._id)},
                         {$addToSet: {readBy: {username: req.user.username}}}
                     );
                 }
 
-                for (s in req.body.starred) {
+                for (s in req.body.addStarred) {
                     collection.update(
-                        {_id: mongo.ObjectID(req.body.starred[s]._id)},
+                        {_id: mongo.ObjectID(req.body.addStarred[s]._id)},
                         {$addToSet: {starredBy: {username: req.user.username}}}
+                    );
+                }
+
+                for (r in req.body.removeRead) {
+                    collection.update(
+                        {_id: mongo.ObjectID(req.body.removeRead[r]._id)},
+                        {$pull: {readBy: {username: req.user.username}}}
+                    );
+                }
+
+                for (s in req.body.removeStarred) {
+                    collection.update(
+                        {_id: mongo.ObjectID(req.body.removeStarred[s]._id)},
+                        {$pull: {starredBy: {username: req.user.username}}}
                     );
                 }
             });
