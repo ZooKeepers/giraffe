@@ -11,6 +11,8 @@ function redirectHTTP()
     window.location.href = loc.replace("http://","https://");
     }
 }
+
+
 function SimpleWebClientViewModel() {
     var vm = this;
 
