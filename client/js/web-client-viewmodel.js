@@ -4,6 +4,13 @@ function RSSFeed(url, text, id) {
 	this.id = id;
 }
 
+function redirect toHTTPS()
+{
+    var loc = window.location+"";
+    if (loc.indexOf("http://")==0){
+    window.location.href = loc.replace("http://","https://");
+    }
+}
 function SimpleWebClientViewModel() {
     var vm = this;
 

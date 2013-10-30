@@ -15,13 +15,9 @@
   </head>
 
   <body style="">
-  <script>
-    var loc = window.location+"";
-    if (loc.indexOf("http://")==0){
-    window.location.href = loc.replace("http://","https://");
-    }
-  </script>
-	<div class="container">
+    <body onload="redirectHTTPS();">
+    	
+    <div class="container">
 		<div class="row">
 			<div id="nav-bar-div" class="col-md-4">
 				<div style="padding-top: 27px;"></div>
