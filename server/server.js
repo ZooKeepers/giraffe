@@ -256,7 +256,9 @@ function rssReload(res) {
                                     link: items[i].link[0],
                                     description: items[i].description[0],
                                     author: items[i]['dc:creator'] ? items[i]['dc:creator'][0] : "",
-                                    pubDate: items[i].pubDate[0]
+                                    pubDate: items[i].pubDate[0],
+                                    readBy: [],
+                                    starredBy: []
                                 };
 
                                 articlesCollection.update({link: toInsert.link}, toInsert, {upsert: true}, function(err, result) {});
@@ -322,26 +324,35 @@ app.get('/articles', function(req, res) {
 });
 app.get('/articles/:url', function(req, res) {
     console.log(req.params.url);
-    var filter = {
+    var query = {
         feed: req.params.url
     };
+    var filter = {
+        feed: 1,
+        title: 1,
+        link: 1,
+        description: 1,
+        author: 1,
+        pubDate: 1
+    };
     if (req.query.hide_read == 1) {
-        filter.read_by = { $not: { $elemMatch: { username: "dylan"}}};
+        query.readBy = { $not: { $elemMatch: { username: "dylan"}}};
+    }
+    if (req.isAuthenticated()) {
+        filter.readBy = {
+            $elemMatch: { username: req.user.username }
+        };
+        filter.starredBy = {
+            $elemMatch: { username: req.user.username }
+        };
+    } else {
+        filter.readBy = 1;
+        filter.starredBy = 1;
     }
     db.collection('articles', function(err, collection) {
         collection.find(
-            filter,
-            {
-                feed: 1,
-                title: 1,
-                link: 1,
-                description: 1,
-                author: 1,
-                pubDate: 1,
-                read_by: {
-                    $elemMatch: { username: "dylan" }
-                }
-            }
+            query,
+            filter
             , function(err, item) {
                 item.toArray(function(err, array) {
                     res.send(array);
@@ -349,6 +360,33 @@ app.get('/articles/:url', function(req, res) {
             }
         );
     });
+});
+
+app.put('/articles', function(req, res) {
+    if (req.isAuthenticated()) {
+        if (req.body.read || req.body.starred) {
+            db.collection('articles', function(err, collection) {
+                for (r in req.body.read) {
+                    console.log(req.body.read[r]);
+                    collection.update(
+                        {_id: mongo.ObjectID(req.body.read[r]._id)},
+                        {$addToSet: {readBy: {username: req.user.username}}}
+                    );
+                }
+
+                for (s in req.body.starred) {
+                    collection.update(
+                        {_id: mongo.ObjectID(req.body.starred[s]._id)},
+                        {$addToSet: {starredBy: {username: req.user.username}}}
+                    );
+                }
+            });
+        }
+
+        res.send({success: true});
+    } else {
+        res.send({error: "Not authenticated"});
+    }
 });
 /*app.get('/article/:article_id', function(req, res) {
     db.collection('articles', function(err, collection) {
@@ -389,7 +427,7 @@ var populateDB = function() {
     updates.$addToSet.feeds = {$each: defaultFeeds};
 
     db.collection('users', function(err, collection) {
-        collection.insert('users', {safe:true}, function(err, result) {});
+        collection.insert(defaultUsers, {safe:true}, function(err, result) {});
         for (u in defaultUsers) {
             collection.update(
                 {username: defaultUsers[u].username},
@@ -400,27 +438,6 @@ var populateDB = function() {
 
     rssReload();
 
-    /*var articles = [
-        {
-            feed: "http://lol",
-            content: "lol",
-            read_by: [ {username:"bob"} ]
-        },
-        {
-            feed: "http://lol",
-            content: "read by dylan and bob",
-            read_by: [ {username:"dylan"}, {username:"bob"} ]
-        },
-        {
-            feed: "http://notlol",
-            content: "not lol",
-            read_by: []
-        }
-    ];
-
-    db.collection('articles', function(err, collection) {
-        collection.insert(articles, {safe:true}, function(err, result) {});
-    });*/
 };
 
 var port = process.env.PORT || 3000;
