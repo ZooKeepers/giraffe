@@ -37,8 +37,12 @@ db.open(function(err, db) {
         db.collection('users', {strict:true}, function(err, collection) {
             if (!err) collection.remove();
             db.collection('articles', {strict:true}, function(err, collection) {
+                //populateDB();
                 if (!err) collection.remove();
-                populateDB();
+                db.collection('feeds', {strict:true}, function(err, collection) {
+                    if (!err) collection.remove();
+                    populateDB();
+                });
             });
         });
     }
@@ -79,7 +83,10 @@ passport.use(new LocalStrategy(function(username, password, done) {
 
 passport.serializeUser(function(user, done) {
     console.log("Serializing: " + user.username);
-    done(null, user.username);
+    db.collection('users', function(err, collection) {
+        collection.update({'username': user.username}, user);
+        done(null, user.username);
+    });
 });
 
 passport.deserializeUser(function(username, done) {
@@ -149,6 +156,40 @@ app.post('/user', function(req, res) {
     });
 });
 
+app.put('/user/:username', function(req, res) {
+    var body = req.body;//JSON.parse(req.body);
+    var updates = {$set: {}, $addToSet: {}, $pullAll: {}};
+    if (req.body.addFeeds) {
+        db.collection('feeds', function(err, collection) {
+            for (f in req.body.addFeeds) {
+                collection.update(
+                    {feed: req.body.addFeeds[f].url},
+                    {feed: req.body.addFeeds[f].url},
+                    {upsert: true}
+                );
+            }
+        });
+        updates.$addToSet.feeds = {$each: req.body.addFeeds};
+
+    }
+    if (req.body.removeFeeds) {
+        updates.$pullAll.feeds = req.body.removeFeeds;
+    }
+
+    if (req.body.newPassword) {
+        updates.$set.passHash = bcrypt.hashSync("body.newPassword");
+    }
+
+    db.collection('users', function(err, collection) {
+        collection.update(
+            {username: req.param('username')},
+            updates
+        );
+    });
+
+    res.send({success: true});
+});
+
 app.delete('/user', function(req, res) {
     db.collection('users', function(err, collection) {
         collection.remove({'username':req.user.username}, function(err, item) {
@@ -172,54 +213,50 @@ app.get('/rssreload', function(req, res) {
 
 function rssReload(res) {
     console.log("running reload");
-    var feeds = [
-        'http://rss.nytimes.com/services/xml/rss/nyt/HomePage.xml',
-        'http://omnifictruthcube.tumblr.com/rss',
-        'http://feeds.theonion.com/theonion/daily'
-    ];
 
     if (res) {
         res.send("Updating RSS feeds...");
     }
 
-    db.collection('articles', function(err, collection) {
-        for (f in feeds) {
-            // closure for variable capture
-            (function() {
-                var feed = feeds[f];
-                rss.parseRSS(feeds[f], function(err, obj) {
-                    // Update feed info
-                    db.collection('feeds', function(err, collection) {
-                        var channel = obj.rss.channel[0];
-                        collection.update(
-                            {feed: feed},
-                            {
-                                feed: feed,
-                                title: channel.title[0],
-                                description: channel.description[0]
-                            },
-                            {upsert: true},
-                            function(err, result) {}
-                        );
-                    });
+    db.collection('feeds', function(err, feedsCollection) {
+        db.collection('articles', function(err, articlesCollection) {
+            feedsCollection.find().each(function(err, item) {
+                console.log(item);
+                if (item != null) {
+                    // closure for variable capture
+                    (function() {
+                        var feed = item.feed;
+                        rss.parseRSS(feed, function(err, obj) {
+                            // Update feed info
+                            var channel = obj.rss.channel[0];
+                            feedsCollection.save(
+                                {
+                                    _id: item._id,
+                                    feed: feed,
+                                    title: channel.title[0],
+                                    description: channel.description[0]
+                                }
+                            );
 
-                    // Update articles
-                    var items = obj.rss.channel[0].item;
-                    for (i in items) {
-                        var toInsert = {
-                            feed: feed,
-                            title: items[i].title[0],
-                            link: items[i].link[0],
-                            description: items[i].description[0],
-                            author: items[i]['dc:creator'] ? items[i]['dc:creator'][0] : "",
-                            pubDate: items[i].pubDate[0]
-                        };
+                            // Update articles
+                            var items = obj.rss.channel[0].item;
+                            for (i in items) {
+                                var toInsert = {
+                                    feed: feed,
+                                    title: items[i].title[0],
+                                    link: items[i].link[0],
+                                    description: items[i].description[0],
+                                    author: items[i]['dc:creator'] ? items[i]['dc:creator'][0] : "",
+                                    pubDate: items[i].pubDate[0]
+                                };
 
-                        collection.update({link: toInsert.link}, toInsert, {upsert: true}, function(err, result) {});
-                    }
-                });
-            })();
-        }
+                                articlesCollection.update({link: toInsert.link}, toInsert, {upsert: true}, function(err, result) {});
+                            }
+                        });
+                    })();
+                }
+            });
+        });
     });
 };
 
@@ -302,19 +339,37 @@ app.get('/articles/:url', function(req, res) {
 });*/
 
 var populateDB = function() {
-    var users = [
-    {
-        username: "dylan",
-        feeds: [
-            { url: 'http://rss.nytimes.com/services/xml/rss/nyt/HomePage.xml' },
-            { url: 'http://omnifictruthcube.tumblr.com/rss' },
-            { url: 'http://feeds.theonion.com/theonion/daily' }
-        ],
-        passHash: bcrypt.hashSync("pass")
-    }];
+    var defaultUsers = [
+        {
+            username: "dylan",
+            passHash: bcrypt.hashSync("pass")
+        }
+    ];
+
+    var defaultFeeds = [
+        { url: 'http://rss.nytimes.com/services/xml/rss/nyt/HomePage.xml' },
+        { url: 'http://omnifictruthcube.tumblr.com/rss' },
+        { url: 'http://feeds.theonion.com/theonion/daily' }
+    ];
+
+    var updates = {$set: {}, $addToSet: {}, $pullAll: {}};
+    db.collection('feeds', function(err, collection) {
+        for (f in defaultFeeds) {
+            collection.update(
+                {feed: defaultFeeds[f].url},
+                {feed: defaultFeeds[f].url},
+                {upsert: true}
+            );
+        }
+    });
+    updates.$addToSet.feeds = {$each: defaultFeeds};
 
     db.collection('users', function(err, collection) {
-        collection.insert(users, {safe:true}, function(err, result) {});
+        collection.insert('users', {safe:true}, function(err, result) {});
+        collection.update(
+            {username: defaultUsers[0].username},
+            updates
+        );
     });
 
     rssReload();
