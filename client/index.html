@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -14,8 +14,9 @@
 	
   </head>
 
-  <body style="">
-	<div class="container">
+  <body style="" onload="redirectHTTP();">
+    	
+    <div class="container">
 		<div class="row">
 			<div id="nav-bar-div" class="col-md-4" data-bind="visible: user().username != 'Login'">
 				<div style="padding-top: 22px;"></div>
@@ -177,5 +178,6 @@
     <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
 	<script src="//cdnjs.cloudflare.com/ajax/libs/knockout/2.3.0/knockout-min.js"></script>
 	<script src="./js/web-client-viewmodel.js"></script> 
-
+    
 </body></html>
+

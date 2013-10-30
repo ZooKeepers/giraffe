@@ -7,16 +7,24 @@ var express = require('express'),
     passport = require('passport'),
     LocalStrategy = require('passport-local').Strategy,
     bcrypt = require('bcrypt-nodejs');
+//var connect=require('connect');
 
+var mongoUri= process.env.MONGOLAB_URI||'mongodb://heroku_app18429032:vlkr2be9re59tb7mjkigkdil1a@ds049538.mongolab.com:49538/heroku_app18429032';
+console.log("URI: "+mongoUri+"\n");
 var app = express();
+
 
 var Server = mongo.Server,
     Db = mongo.Db,
     BSON = mongo.BSONPure;
 
 var server = new Server('localhost', 27017, {auto_reconnect: true});
-db = new Db('feaderdb', server);
-
+//db = new Db('feaderdb', server);
+//mongo.connect(mongoUri, {}, function(error, db){
+mongo.MongoClient.connect(mongoUri, function (err, db) {
+if(err) console.log("ERROR: "+err);
+if(!err)
+{
 //run every 15 mins
 var job = new cronJob({
     //run our update every 30 minutes
@@ -31,22 +39,29 @@ var job = new cronJob({
     start: true
 });
 
-db.open(function(err, db) {
+
     if (!err) {
         console.log("Connected to 'feaderdb' database");
         db.collection('users', {strict:true}, function(err, collection) {
-            if (!err) collection.remove();
+            if (!err) collection.remove(function(err){if(err) console.log("ERROR REMOVING");});
             db.collection('articles', {strict:true}, function(err, collection) {
+/*<<<<<<< HEAD
                 //populateDB();
                 if (!err) collection.remove();
                 db.collection('feeds', {strict:true}, function(err, collection) {
                     if (!err) collection.remove();
                     populateDB();
                 });
+=======*/
+            if (!err) collection.remove(function(err){if(err) console.log("ERROR REMOVING");});
+                populateDB();
+//>>>>>>> kevin
             });
         });
     }
-});
+    else{
+    console.log("Error: not connected to feaderdb" );
+    }
 
 app.configure(function() {
     app.use(express.static(path.join(__dirname, '..',  'client')));
@@ -62,9 +77,12 @@ app.configure(function() {
 passport.use(new LocalStrategy(function(username, password, done) {
     console.log("SOMEONE'S LOGGING IN")
     db.collection('users', function(err, collection) {
+        console.log("collection: "+collection);
+        console.log("username: " + username);
+        console.log("");
         collection.findOne({'username': username}, function(err, item) {
             if (err) {
-                console.log("Authentication error");
+                console.log("Authentication error: "+err);
                 return done(err);
             }
             if (!item) {
@@ -97,6 +115,36 @@ passport.deserializeUser(function(username, done) {
         });
     });
 });
+
+
+//redirect to https
+app.all('*', function (req, res, next) {
+    if (req.get('x-forwarded-proto') != "https") {
+        res.set('x-forwarded-proto', 'https');
+        res.redirect('https://' + req.get('host') + req.url);
+    }
+    else
+    {
+    next();
+    }
+});
+
+/*Redirect any static file requests
+app.all('*', function(req, res, next)
+{
+    console.log("URL:" +res.url);
+     filePath = __dirname+'/../client/',res.url);
+
+    if (path.existsSync(filePath))
+    {
+        res.sendfile(filePath);
+    }
+    else
+    {
+       next();
+    }
+});*/
+
 
 app.post('/login',
     passport.authenticate('local', null)
@@ -362,6 +410,7 @@ app.get('/articles/:url', function(req, res) {
     });
 });
 
+
 app.put('/articles', function(req, res) {
     if (req.isAuthenticated()) {
         if (req.body.addRead || req.body.addStarred || req.body.removeRead || req.body.removeStarred) {
@@ -401,6 +450,7 @@ app.put('/articles', function(req, res) {
         res.send({error: "Not authenticated"});
     }
 });
+
 /*app.get('/article/:article_id', function(req, res) {
     db.collection('articles', function(err, collection) {
         collection.findOne({id:req.params.article_id}, function(err, item) {
@@ -452,8 +502,13 @@ var populateDB = function() {
     rssReload();
 
 };
-
-var port = process.env.PORT || 3000;
+var port = process.env.PORT || 5000;
 app.listen(port, function(){
 console.log("Listening on "+port);});
+}
+else
+{
+    console.log("ERROR"+err);
+}
+});
 
