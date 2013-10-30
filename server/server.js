@@ -199,6 +199,15 @@ app.delete('/user', function(req, res) {
     });
 });
 
+app.delete('/user/:username', function(req, res) {
+    db.collection('users', function(err, collection) {
+        collection.remove({'username':req.param('username')}, function(err, item) {
+            res.send(item);
+            req.logout();
+        });
+    });
+});
+
 app.get('/rss', function(req, res) {
     rss.parseRSS('http://rss.nytimes.com/services/xml/rss/nyt/HomePage.xml', function(err, obj) {
         //obj.rss.channel[0].item = 0;
@@ -274,6 +283,17 @@ app.get('/user', function(req, res) {
         res.send({ error: "Not authenticated" });
     }
 });
+
+app.get('/users', function(req, res) {
+    db.collection('users', function(err, collection) {
+        collection.find(function(err, item) {
+            item.toArray(function(err, array) {
+                res.send(array);
+            });
+        });
+    });
+});
+
 app.get('/feed/:url', function(req, res) {
     db.collection('feeds', function(err, collection) {
         collection.find(
@@ -343,6 +363,10 @@ var populateDB = function() {
         {
             username: "dylan",
             passHash: bcrypt.hashSync("pass")
+        },
+        {
+            username: "paco",
+            passHash: bcrypt.hashSync("pass")
         }
     ];
 
@@ -366,10 +390,12 @@ var populateDB = function() {
 
     db.collection('users', function(err, collection) {
         collection.insert('users', {safe:true}, function(err, result) {});
-        collection.update(
-            {username: defaultUsers[0].username},
-            updates
-        );
+        for (u in defaultUsers) {
+            collection.update(
+                {username: defaultUsers[u].username},
+                updates
+            );
+        }
     });
 
     rssReload();

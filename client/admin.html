@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="shortcut icon" href="./ico/favicon.png">
+
+    <title>Giraffe Admin Page</title>
+
+	<link rel="stylesheet" href="./css/giraffe.css">
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css">
+	<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-theme.min.css">
+	
+  </head>
+
+  <body style="">
+	<div class="container">
+        <a data-bind="click: getAllUsers">test</a>
+        <div class="panel-group" id="artAcc" data-bind="foreach: users">
+          <div class="panel">
+              <h4 class="panel-title">
+                <span class="text-muted glyphicon glyphicon-user"> </span>
+                <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#artAcc" 
+					data-bind="text: username, attr: { href: $root.genAccLink('artAcc', username) }">
+                </a>
+              </h4>
+		      <div id="collapseOne" class="panel-collapse collapse" style="height: 0px;" data-bind="attr: { id: $root.genAccId('artAcc', username) }">
+              <div class="panel-body" >
+                <h5 data-bind="text: id "></h5>
+                <h5 data-bind="text: id "></h5>
+                <a data-bind="click: $root.deleteUser.bind($data, username)"">Delete Account</a>
+                <a data-bind="click: $root.resetPassword">Reset Password</a>
+              </div>
+            </div>
+          </div>
+        </div>
+	</div>
+	<footer>
+		<p>© ZooKeepers 2013</p>
+	</footer>	
+	
+    <!-- Bootstrap/Knockout core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+    <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
+	<script src="//cdnjs.cloudflare.com/ajax/libs/knockout/2.3.0/knockout-min.js"></script>
+	<script src="./js/admin-viewmodel.js"></script> 
+
+</body></html>
