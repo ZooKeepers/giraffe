@@ -4,7 +4,7 @@ function RSSFeed(url, text, id) {
 	this.id = id;
 }
 
-function redirect toHTTPS()
+function redirectHTTP()
 {
     var loc = window.location+"";
     if (loc.indexOf("http://")==0){
