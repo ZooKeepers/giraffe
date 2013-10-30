@@ -21,15 +21,16 @@
 				<div style="padding-top: 27px;"></div>
 				<div class="row">
 					<ul class="nav nav-tabs">
-					  <li class="active"><a href="#" style="padding: 10px 20px; font-size: 20px;">My Feeds</a></li>
-					  <li><a href="#" style="padding: 10px 20px; font-size: 20px;">+Content</a></li>
+					  <li class="active"><h4 style="padding: 10px 20px; font-size: 20px;"><a data-bind="text: user().username"></a> 
+						<!-- ko if: user().username != 'Login' -->
+							(<a data-bind="click: logout">Logout</a>)
+						<!-- /ko --></h4></li>
 					</ul>
 				</div>
 				<div class="container" >
 					<h5>.</h5>
 					<a><h5><span class="glyphicon glyphicon-dashboard"> </span> Today</h5></a>
 					<a><h5><span class="glyphicon glyphicon-bookmark"> </span> Bookmarked</h5></a>
-					<a><h5 style="padding-left: 18px;">Organize...</h5></a>
 					<h5>.</h5>
 					<a data-bind="click: showAllFeeds"><h5>
 						<span class="glyphicon glyphicon-align-justify"> </span> All Feeds
@@ -86,18 +87,11 @@
 								</h5></a>
 							</div>
 						</div>
+                        <h5 style="margin-bottom: 0px">
+							<span class="glyphicon glyphicon-plus"></span> Add Category...
+						</h5>
 					</div>
-					<h5>.</h5>
-					<a><h5 style="padding-left: 18px;">Index</h5></a>
-					<a><h5 style="padding-left: 18px;">Recently Read</h5></a>
-					<a><h5 style="padding-left: 18px;">Preferences</h5></a>
-					<a><h5 style="padding-left: 18px;">Themes</h5></a>
-					<a><h5 style="padding-left: 18px;">Support</h5></a>
-					<h5>.</h5>
-					<h5 style="padding-left: 18px;"><a data-bind="text: user().username"></a> 
-						<!-- ko if: user().username != 'Login' -->
-							(<a data-bind="click: logout">Logout</a>)
-						<!-- /ko -->
+					<h5 style="padding-left: 18px;">
 					</h5>
 					<h5>.</h5>
 				</div>
@@ -110,7 +104,6 @@
 					</div>
 					<div class="col-md-2">
 						<h4 class="pull-right">
-							<a style="color: #333;"><span style="margin-top: 20px" class="glyphicon glyphicon-check"></span></a>
 							<a style="color: #333;"><span style="margin-top: 20px" class="glyphicon glyphicon-cog"></span></a>
 							<a style="color: #333;"><span style="margin-top: 20px" class="glyphicon glyphicon-refresh"></span></a>
 						</h4>
@@ -146,9 +139,7 @@
 					</div>
 					<div class="container col-md-6">
 						<h3 style="margin-top: 5px; margin-bottom: 5px">About Giraffe-RSS</h3>
-						This is information about giraffe-rss. This is information about giraffe-rss. This is information about giraffe-rss. This is information about giraffe-rss. This is information about giraffe-rss. This is information about giraffe-rss. This is information about giraffe-rss. This is information about giraffe-rss. This is information about giraffe-rss. This is information about giraffe-rss. 
-						This is information about giraffe-rss. This is information about giraffe-rss. This is information about giraffe-rss. This is information about giraffe-rss. This is information about giraffe-rss. This is information about giraffe-rss. This is information about giraffe-rss. This is information about giraffe-rss. This is information about giraffe-rss. This is information about giraffe-rss. 
-						This is information about giraffe-rss. This is information about giraffe-rss. This is information about giraffe-rss. This is information about giraffe-rss. This is information about giraffe-rss. This is information about giraffe-rss. This is information about giraffe-rss. This is information about giraffe-rss. This is information about giraffe-rss. This is information about giraffe-rss. 
+						Giraffe RSS Reader is an RSS Reader that does a lot of things very well. It will allow you to easily organize and search up your RSS information and let you get your news easily and quickly.
 					</div>
 				</div>
 				<!-- /Login Div -->
