@@ -93,8 +93,9 @@ passport.use(new LocalStrategy(function(username, password, done) {
 passport.serializeUser(function(user, done) {
     console.log("Serializing: " + user.username);
     db.collection('users', function(err, collection) {
-        collection.update({'username': user.username}, user);
-        done(null, user.username),function(err){if(err) console.log("ERROR serializing");};
+        //TODO check with Dylan
+        collection.update({'username': user.username}, user,function(err){if(err) console.log("ERROR REMOVING");});
+        done(null, user.username);
     });
 });
 
@@ -102,7 +103,7 @@ passport.deserializeUser(function(username, done) {
     console.log("Deserializing " + username);
     db.collection('users', function(err, collection) {
         collection.findOne({'username': username}, function(err, item) {
-            done(err, item),function(err){if(err) console.log("ERROR deserialize");};
+            done(err, item);
         });
     });
 });
