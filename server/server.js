@@ -45,24 +45,15 @@ var job = new cronJob({
         db.collection('users', {strict:true}, function(err, collection) {
             if (!err) collection.remove(function(err){if(err) console.log("ERROR REMOVING");});
             db.collection('articles', {strict:true}, function(err, collection) {
-/*<<<<<<< HEAD
-                //populateDB();
-                if (!err) collection.remove();
-                db.collection('feeds', {strict:true}, function(err, collection) {
-                    if (!err) collection.remove();
-                    populateDB();
-                });
-=======*/
             if (!err) collection.remove(function(err){if(err) console.log("ERROR REMOVING");});
                 populateDB();
-//>>>>>>> kevin
             });
         });
     }
     else{
     console.log("Error: not connected to feaderdb" );
     }
-
+    
 app.configure(function() {
     app.use(express.static(path.join(__dirname, '..',  'client')));
     app.use(express.cookieParser());
@@ -292,7 +283,7 @@ function rssReload(res) {
                                     feed: feed,
                                     title: channel.title[0],
                                     description: channel.description[0]
-                                }
+                                },function(err){if(err) console.log("ERROR Saving");}
                             );
 
                             // Update articles
@@ -483,7 +474,7 @@ var populateDB = function() {
             collection.update(
                 {feed: defaultFeeds[f].url},
                 {feed: defaultFeeds[f].url},
-                {upsert: true}
+                {upsert: true},function(err){if(err) console.log("ERROR updating feed");}
             );
         }
     });
@@ -494,7 +485,7 @@ var populateDB = function() {
         for (u in defaultUsers) {
             collection.update(
                 {username: defaultUsers[u].username},
-                updates
+                updates,function(err){if(err) console.log("ERROR updating users");}
             );
         }
     });
