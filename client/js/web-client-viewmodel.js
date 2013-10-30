@@ -26,7 +26,7 @@ function SimpleWebClientViewModel() {
 	vm.titleTagLine = ko.computed(
 		function() {
 			if(vm.user().username == 'Login')
-				return 'Login or play with some of the demo feeds // ';
+				return 'Login in below';
 			
 			return '64 unread articles // ';
 	});
@@ -211,6 +211,15 @@ function SimpleWebClientViewModel() {
 
         window.swcvm = new SimpleWebClientViewModel();
         ko.applyBindings(swcvm);
+		$('#link-a').tooltip({
+			placement: 'left'
+		});
+		$('#settings-a').tooltip({
+			placement: 'top'
+		});
+		$('#refresh-a').tooltip({
+			placement: 'right'
+		});
 		
     });
 }($, window, document));
