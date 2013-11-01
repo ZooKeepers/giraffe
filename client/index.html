@@ -103,9 +103,9 @@
 				<div class="row text-well container" data-bind="visible: !navbarTab()">
 					<h5>.</h5>
 					<div class="input-group">
-					  <input type="text" class="form-control" placeholder="Add Custom Feed">
+					  <input type="text" class="form-control" placeholder="Add Custom Feed" data-bind="text: newFeedInput">
 					  <span class="input-group-btn">
-						<button class="btn btn-default" type="button">
+						<button class="btn btn-default" type="button" data-bind="click: addFeed">
 							<span class="glyphicon glyphicon-plus"></span>
 						</button>
 					  </span>

@@ -25,6 +25,21 @@ function SimpleWebClientViewModel() {
 	
 	vm.navbarTab = ko.observable(true);
 	
+	vm.newFeedInput = ko.observable();
+	vm.addFeed = function () {
+	
+		var json = JSON.stringify({
+						addFeeds: [{ url: "http://rss.cnn.com/rss/cnn_health.rss" }]
+					});
+		$.ajax({
+		    url: urlBase + vm.user().username,
+			dataType: "application/json",
+			type: 'PUT',
+			cache: false,
+			data: json
+		});
+	};
+	
 	vm.activeContentTab = function() {
 		vm.navbarTab(false);
 		$('#FeedsTab').removeAttr("class");
