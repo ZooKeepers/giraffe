@@ -240,6 +240,24 @@ function SimpleWebClientViewModel() {
 		});
 	};
 	
+	vm.markAsFav = function(data) {
+		if (data.favorite)
+			data.favorite = '';
+		else
+			data.favorite = 'fav-icon';
+			
+		var json = {
+						addStarred: [{ _id: data.id }]
+					};
+		$.ajax({
+		    url: urlBase + 'articles',
+			dataType: "application/json",
+			type: 'PUT',
+			cache: false,
+			data: json
+		});
+	};
+	
 	// Pull the items from a specific feed
 	function getFeedItems(feed) {
 		$.ajax({
@@ -255,6 +273,7 @@ function SimpleWebClientViewModel() {
 						author: item.author,
 						id: item._id,
 						read: item.readBy ? 'read-article' : '',
+						favorite: item.starredBy ? 'fav-icon' : ''
 					});
 				});
 			}

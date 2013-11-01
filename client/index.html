@@ -232,7 +232,7 @@
 				<div class="panel-group" id="artAcc" data-bind="foreach: displayedItems">
 				  <div class="panel">
 					  <h4 class="panel-title" data-bind="css: read">
-						<span class="text-muted glyphicon glyphicon-bookmark"> </span>
+						<span class="text-muted glyphicon glyphicon-bookmark" data-bind="css: favorite, click: $root.markAsFav"> </span>
 						<a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#artAcc" 
 							data-bind="click: $root.markAsRead, text: title, attr: { href: $root.genAccLink('artAcc', title)}">
 						</a>
