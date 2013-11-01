@@ -314,27 +314,8 @@ app.get('/feed/:url', function(req, res) {
     });
 });
 app.get('/articles', function(req, res) {
-    var filter = {
-        feed: 1,
-        title: 1,
-        link: 1,
-        description: 1,
-        author: 1,
-        pubDate: 1
-    };
-    if (req.isAuthenticated()) {
-        filter.readBy = {
-            $elemMatch: { username: req.user.username }
-        };
-        filter.starredBy = {
-            $elemMatch: { username: req.user.username }
-        };
-    } else {
-        filter.readBy = 1;
-        filter.starredBy = 1;
-    }
     db.collection('articles', function(err, collection) {
-        collection.find({}, filter, function(err, item) {
+        collection.find(function(err, item) {
             item.toArray(function(err, array) {
                 res.send(array);
             });
