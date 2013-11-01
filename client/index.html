@@ -21,17 +21,98 @@
 				<div style="padding-top: 22px;"></div>
 				<div class="row">
 					<ul class="nav nav-tabs">
-					 <li class="active"><a href="#" style="padding: 10px 20px; font-size: 20px;">My Feeds</a></li>
-				  <li><a href="#" style="padding: 10px 20px; font-size: 20px;">+Content</a></li>
+					 <li id="FeedsTab" class="active"><a href="#" style="padding: 10px 20px; font-size: 20px;" data-bind="click: activeFeedsTab">My Feeds</a></li>
+					 <li id="ContentTab"><a href="#" style="padding: 10px 20px; font-size: 20px;" data-bind="click: activeContentTab">+Content</a></li>
 					</ul>
 				</div>
-				<div class="row text-well container" >
+				<div class="row text-well container" data-bind="visible: navbarTab">
 					<h5>.</h5>
 					<a><h5><span class="glyphicon glyphicon-dashboard"> </span> Today</h5></a>
 					<a><h5><span class="glyphicon glyphicon-bookmark"> </span> Bookmarked</h5></a>
 					<a><h5 style="padding-left: 18px;">Organize...</h5></a><h5>.</h5>
 					<a data-bind="click: showAllFeeds"><h5>
 						<span class="glyphicon glyphicon-align-justify"> </span> All Feeds
+						<span class="text-muted pull-right">105</span>
+					</h5></a>
+					<div class="panel-group" id="accordion">
+						<h5 style="margin-bottom: 0px">
+							<a data-toggle="collapse" data-parent="#accordion" href="#1">
+								<span class="glyphicon glyphicon-chevron-down"></span> First Category (placeholder)
+								<span class="text-muted pull-right">15</span>
+							</a>
+						</h5>
+						<div id="1" class="panel-collapse collapse">
+							<div style="padding: 0px 0px 0px 25px;">
+								<a><h5>
+									<span class="glyphicon glyphicon-bullhorn"> </span> Feed A
+									<span class="text-muted pull-right">15</span>
+								</h5></a>
+								<a><h5>
+									<span class="glyphicon glyphicon-earphone"> </span> Feed B
+									<span class="text-muted pull-right"> </span>
+								</h5></a>
+							</div>
+						</div>
+						<h5 style="margin-bottom: 0px">
+							<a data-toggle="collapse" data-parent="#accordion" href="#2">
+								<span class="glyphicon glyphicon-chevron-down"></span> Second Category (placeholder)
+								<span class="text-muted pull-right">48</span>
+							</a>
+						</h5>
+						<div id="2" class="panel-collapse collapse">
+							<div style="padding: 0px 0px 0px 25px;">
+								<a><h5>
+									<span class="glyphicon glyphicon-cloud-upload"> </span> Feed D
+									<span class="text-muted pull-right">15</span>
+								</h5></a>
+								<a><h5>
+									<span class="glyphicon glyphicon-cloud-download"> </span> Feed H
+									<span class="text-muted pull-right">33</span>
+								</h5></a>
+							</div>
+						</div>
+						<h5 style="margin-bottom: 0px">
+							<a data-toggle="collapse" data-parent="#accordion" href="#3">
+								<span class="glyphicon glyphicon-chevron-down"></span> Uncategorised
+								<span class="text-muted pull-right">42</span>
+							</a>
+						</h5>
+						<div id="3" class="panel-collapse collapse">
+							<div style="padding: 0px 0px 0px 25px;" data-bind="foreach: feeds">
+								<a data-bind="click: $root.changeFeed"><h5>
+									<span class="glyphicon glyphicon-filter"></span><span data-bind="text: title"></span>
+									<span class="text-muted pull-right">5</span>
+								</h5></a>
+							</div>
+						</div>
+					</div>
+					<h5>.</h5>
+						<a><h5 style="padding-left: 18px;">Index</h5></a>
+						<a><h5 style="padding-left: 18px;">Recently Read</h5></a>
+						<a><h5 style="padding-left: 18px;">Preferences</h5></a>
+						<a><h5 style="padding-left: 18px;">Themes</h5></a>
+						<a><h5 style="padding-left: 18px;">Support</h5></a>
+					<h5>.</h5>
+					<h5 style="padding-left: 18px;"><a data-bind="text: user().username"></a> 
+						<!-- ko if: user().username != 'Login' -->
+							(<a data-bind="click: logout">Logout</a>)
+						<!-- /ko -->
+					</h5>
+					<h5>.</h5>
+				</div>
+				<div class="row text-well container" data-bind="visible: !navbarTab()">
+					<h5>.</h5>
+					<div class="input-group">
+					  <input type="text" class="form-control" placeholder="Add Custom Feed">
+					  <span class="input-group-btn">
+						<button class="btn btn-default" type="button">
+							<span class="glyphicon glyphicon-plus"></span>
+						</button>
+					  </span>
+					</div>	
+					<h5>.</h5>
+					<a><h5>
+						<span class="glyphicon glyphicon-align-justify"> </span> Suggested Feeds
 						<span class="text-muted pull-right">105</span>
 					</h5></a>
 					<div class="panel-group" id="accordion">

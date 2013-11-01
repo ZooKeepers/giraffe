@@ -23,6 +23,20 @@ function SimpleWebClientViewModel() {
 	vm.loginUsername = ko.observable();
 	vm.loginPassword = ko.observable();
 	
+	vm.navbarTab = ko.observable(true);
+	
+	vm.activeContentTab = function() {
+		vm.navbarTab(false);
+		$('#FeedsTab').removeAttr("class");
+		$('#ContentTab').addClass('active');
+	};
+	
+	vm.activeFeedsTab = function() {
+		vm.navbarTab(true);
+		$('#FeedsTab').addClass('active');
+		$('#ContentTab').removeAttr('class');
+	};
+	
 	vm.titleTagLine = ko.computed(
 		function() {
 			if(vm.user().username == 'Login')
