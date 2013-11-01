@@ -79,8 +79,9 @@
 						</h5>
 						<div id="3" class="panel-collapse collapse">
 							<div style="padding: 0px 0px 0px 25px;" data-bind="foreach: feeds">
-								<a data-bind="click: $root.changeFeed"><h5>
-									<span class="glyphicon glyphicon-filter"></span><span data-bind="text: title"></span>
+								<a><h5>
+									<span data-toggle="tooltip" data-placement="top" title="Remove Feed" class="glyphicon glyphicon-minus" data-bind="click: $root.removeFeed"></span>
+									<span data-bind="click: $root.changeFeed, text: ' ' + title"></span>
 									<span class="text-muted pull-right">5</span>
 								</h5></a>
 							</div>
@@ -112,7 +113,7 @@
 					</div>	
 					<h5>.</h5>
 					<a><h5>
-						<span class="glyphicon glyphicon-align-justify"> </span> Suggested Feeds
+						<span class="glyphicon glyphicon-align-justify"> </span> Suggested Feeds (NYI)
 						<span class="text-muted pull-right">105</span>
 					</h5></a>
 					<div class="panel-group" id="accordion">
@@ -230,10 +231,10 @@
 				<!-- /Login Div -->
 				<div class="panel-group" id="artAcc" data-bind="foreach: displayedItems">
 				  <div class="panel">
-					  <h4 class="panel-title">
+					  <h4 class="panel-title" data-bind="css: read">
 						<span class="text-muted glyphicon glyphicon-bookmark"> </span>
 						<a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#artAcc" 
-							data-bind="text: title, attr: { href: $root.genAccLink('artAcc', title) }">
+							data-bind="click: $root.markAsRead, text: title, attr: { href: $root.genAccLink('artAcc', title)}">
 						</a>
 					  </h4>
 					<div id="collapseOne" class="panel-collapse collapse" style="height: 0px;" data-bind="attr: { id: $root.genAccId('artAcc', title) }">

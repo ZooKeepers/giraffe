@@ -26,19 +26,43 @@ function SimpleWebClientViewModel() {
 	vm.navbarTab = ko.observable(true);
 	
 	vm.newFeedInput = ko.observable();
+	
+	//bug: input not cleared on acceptance
 	vm.addFeed = function () {
 	
-		var json = JSON.stringify({
-						addFeeds: [{ url: "http://rss.cnn.com/rss/cnn_health.rss" }]
-					});
+		var json = {
+					addFeeds: [{ url: vm.newFeedInput() }]
+				};
+				
 		$.ajax({
-		    url: urlBase + vm.user().username,
+		    url: urlBase + 'user/' + vm.user().username,
 			dataType: "application/json",
 			type: 'PUT',
 			cache: false,
 			data: json
 		});
+		
+		alert('Feed Added!');
+		vm.newFeedInput('');
 	};
+	
+	vm.removeFeed = function (data) {
+	
+		var json = {
+					removeFeeds: [{ url: data.feed }]
+				};
+				
+		$.ajax({
+		    url: urlBase + 'user/' + vm.user().username,
+			dataType: "application/json",
+			type: 'PUT',
+			cache: false,
+			data: json
+		});
+		
+		alert('Feed Removed!!');
+	};
+	
 	
 	vm.activeContentTab = function() {
 		vm.navbarTab(false);
@@ -202,6 +226,20 @@ function SimpleWebClientViewModel() {
 		});
 	}
 	
+	vm.markAsRead = function(data) {
+		data.read = 'read-artcile';
+		var json = {
+						addRead: [{ _id: data.id }]
+					};
+		$.ajax({
+		    url: urlBase + 'articles',
+			dataType: "application/json",
+			type: 'PUT',
+			cache: false,
+			data: json
+		});
+	};
+	
 	// Pull the items from a specific feed
 	function getFeedItems(feed) {
 		$.ajax({
@@ -215,7 +253,8 @@ function SimpleWebClientViewModel() {
 						title: item.title,
 						timestamp: item.pubDate,
 						author: item.author,
-						id: item._id
+						id: item._id,
+						read: item.readBy ? 'read-article' : '',
 					});
 				});
 			}

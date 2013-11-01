@@ -14,6 +14,10 @@ body {
 	background-image: url("../img/zebra_theme.png") !important;
 }
 
+.read-article {
+	background-color: rgba(255, 255, 255, 1);
+}
+
 .text-well {
 	background-color: rgba(255, 255, 255, 0.6);
 	width: 108%;
