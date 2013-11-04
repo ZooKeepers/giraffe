@@ -159,7 +159,9 @@ app.post('/user', function(req, res) {
 app.put('/user/:username', function(req, res) {
     var body = req.body;//JSON.parse(req.body);
     var updates = {$set: {}, $addToSet: {}, $pullAll: {}};
+    console.log(req.body);
     if (req.body.addFeeds) {
+        console.log(req.body.addFeeds);
         db.collection('feeds', function(err, collection) {
             for (f in req.body.addFeeds) {
                 collection.update(

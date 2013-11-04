@@ -30,7 +30,6 @@ function SimpleWebClientViewModel() {
 	
 	//bug: input not cleared on acceptance
 	vm.addFeed = function () {
-	
 		var json = {
 					addFeeds: [{ url: vm.newFeedInput() }]
 				};
