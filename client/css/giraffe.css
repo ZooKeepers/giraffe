@@ -17,6 +17,11 @@ body {
 .fav-icon {
 	color: #428bca !important;
 }
+
+.norm-icon {
+	color: #999 !important;
+}
+
 .read-article {
 	background-color: rgba(255, 255, 255, 1);
 }

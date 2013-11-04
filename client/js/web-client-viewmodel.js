@@ -24,8 +24,9 @@ function SimpleWebClientViewModel() {
 	vm.loginPassword = ko.observable();
 	
 	vm.navbarTab = ko.observable(true);
-	
 	vm.newFeedInput = ko.observable();
+	
+	vm.bookmarkedArray = ko.observableArray([]);
 	
 	//bug: input not cleared on acceptance
 	vm.addFeed = function () {
@@ -198,6 +199,7 @@ function SimpleWebClientViewModel() {
 		vm.currentFeed('All Feeds');
 		
 		vm.displayedItems([]);
+		vm.bookmarkedArray([]);
 		
 		ko.utils.arrayForEach(vm.feeds(), function(feed) {
 			getFeedItems(feed);
@@ -208,6 +210,7 @@ function SimpleWebClientViewModel() {
 	// -- Also pulls the items of that feed
 	function getFeedData() {
 		vm.currentFeed('All Feeds');
+		
 		ko.utils.arrayForEach(vm.user().feeds, function(feed) {
 			$.ajax({
 				url: urlBase + 'feed/' + encodeURIComponent(feed.url),
@@ -226,7 +229,11 @@ function SimpleWebClientViewModel() {
 		});
 	}
 	
-	vm.markAsRead = function(data) {
+	vm.markAsRead = function(data, event) {
+		var element = event.target.parentElement.parentElement;
+		
+		element.style.backgroundColor = 'rgba(255, 255, 255, 1)';
+		
 		data.read = 'read-artcile';
 		var json = {
 						addRead: [{ _id: data.id }]
@@ -240,22 +247,48 @@ function SimpleWebClientViewModel() {
 		});
 	};
 	
-	vm.markAsFav = function(data) {
-		if (data.favorite)
+	vm.showBookmarked = function(){
+		vm.currentFeed('Bookmarked');
+		
+		vm.displayedItems(vm.bookmarkedArray());
+	}
+	
+	vm.markAsFav = function(data, event) {
+		var element = event.target;
+		
+		if (data.favorite == 'fav-icon') {
 			data.favorite = '';
-		else
-			data.favorite = 'fav-icon';
+			$(element).addClass('norm-icon');
+			$(element).removeClass('fav-icon');
 			
-		var json = {
-						addStarred: [{ _id: data.id }]
-					};
-		$.ajax({
-		    url: urlBase + 'articles',
-			dataType: "application/json",
-			type: 'PUT',
-			cache: false,
-			data: json
-		});
+			var id = data.id;
+			vm.bookmarkedArray.remove(function(data) { return id == data.id } );
+			
+			var json = { removeStarred: [{ _id: data.id }] };
+			$.ajax({
+				url: urlBase + 'articles',
+				dataType: "application/json",
+				type: 'PUT',
+				cache: false,
+				data: json
+			});
+		}
+		else {
+			data.favorite = 'fav-icon';
+			$(element).removeClass('norm-icon');
+			$(element).addClass('fav-icon');
+			
+			vm.bookmarkedArray.push(data);
+			
+			var json = { addStarred: [{ _id: data.id }] };
+			$.ajax({
+				url: urlBase + 'articles',
+				dataType: "application/json",
+				type: 'PUT',
+				cache: false,
+				data: json
+			});
+		}
 	};
 	
 	// Pull the items from a specific feed
@@ -264,6 +297,7 @@ function SimpleWebClientViewModel() {
 		    url: urlBase + 'articles/' + encodeURIComponent(feed.feed),
 			dataType: "json",
 			success: function (data) {
+				
 				ko.utils.arrayForEach(data, function(item) {
 					vm.displayedItems.push({
 						feed: feed.title,
@@ -273,8 +307,11 @@ function SimpleWebClientViewModel() {
 						author: item.author,
 						id: item._id,
 						read: item.readBy ? 'read-article' : '',
-						favorite: item.starredBy ? 'fav-icon' : ''
+						favorite: item.starredBy ? 'fav-icon' : 'norm-icon'
 					});
+					
+					if(vm.displayedItems()[vm.displayedItems().length-1].favorite == 'fav-icon')
+						vm.bookmarkedArray.push(vm.displayedItems()[vm.displayedItems().length-1]);
 				});
 			}
 		});
