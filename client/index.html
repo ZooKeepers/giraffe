@@ -29,7 +29,7 @@
 					<h5>.</h5>
 					<a><h5><span class="glyphicon glyphicon-dashboard"> </span> Today</h5></a>
 					<a data-bind="click: showBookmarked"><h5><span class="glyphicon glyphicon-bookmark"> </span> Bookmarked</h5></a>
-					<a><h5 style="padding-left: 18px;">Organize...</h5></a><h5>.</h5>
+					<h5>.</h5>
 					<a data-bind="click: showAllFeeds"><h5>
 						<span class="glyphicon glyphicon-align-justify"> </span> All Feeds
 						<span class="text-muted pull-right">105</span>
@@ -88,10 +88,29 @@
 						</div>
 					</div>
 					<h5>.</h5>
-						<a><h5 style="padding-left: 18px;">Index</h5></a>
 						<a><h5 style="padding-left: 18px;">Recently Read</h5></a>
-						<a><h5 style="padding-left: 18px;">Preferences</h5></a>
-						<a><h5 style="padding-left: 18px;">Themes</h5></a>
+						<a data-toggle="modal" data-target="#myModal"><h5 style="padding-left: 18px;">Themes</h5></a>
+						<!-- Modal -->
+						<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+						  <div class="modal-dialog">
+							<div class="modal-content">
+							  <div class="modal-header">
+								<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+								<h4 class="modal-title" id="myModalLabel">Choose a Theme</h4>
+							  </div>
+							  <div class="modal-body text-center">
+								<img src="./img/zebra-theme.png" alt="..." class="img-circle">
+								<img src="./img/giraffe-theme.png" alt="..." class="img-circle">
+								<img src="./img/giraffe-theme.png" alt="..." class="img-circle">
+								<img src="./img/zebra-theme.png" alt="..." class="img-circle">
+							  </div>
+							  <div class="modal-footer">
+								<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+								<button type="button" class="btn btn-primary">Save changes</button>
+							  </div>
+							</div><!-- /.modal-content -->
+						  </div><!-- /.modal-dialog -->
+						</div><!-- /.modal -->
 						<a><h5 style="padding-left: 18px;">Support</h5></a>
 					<h5>.</h5>
 					<h5 style="padding-left: 18px;"><a data-bind="text: user().username"></a> 
