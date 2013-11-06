@@ -170,10 +170,11 @@ app.put('/user/:username', function(req, res) {
                     {upsert: true}
                 );
             }
+            rssReload(res);
         });
         updates.$addToSet.feeds = {$each: req.body.addFeeds};
-
     }
+    
     if (req.body.removeFeeds) {
         updates.$pullAll.feeds = req.body.removeFeeds;
     }
