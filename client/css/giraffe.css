@@ -12,6 +12,7 @@
 
 body {
 	background-image: url("../img/zebra-theme.png") !important;
+  background-attachment: fixed;
 }
 
 .fav-icon {
