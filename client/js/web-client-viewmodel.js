@@ -36,13 +36,38 @@ function SimpleWebClientViewModel() {
 				
 		$.ajax({
 		    url: urlBase + 'user/' + vm.user().username,
-			dataType: "application/json",
+			dataType: "json",
 			type: 'PUT',
 			cache: false,
-			data: json
+			data: json,
+            success: function (data) {
+                $.ajax({
+                    url: urlBase + 'user',
+                    dataType: "json",
+                    success: function (data) {
+                        if(data.error) {
+                            vm.user({
+                                username: 'Login',
+                                error: true
+                            });
+                            return;
+                        }
+                        vm.user({
+                            username: data.username,
+                            feeds: data.feeds,
+                            id: data._id
+                        });
+                        
+                        setTimeout(function() {
+                            vm.feeds([]);
+                            getFeedData();
+                        },5000);                        
+                    }
+                });                
+                
+			}
 		});
-        
-		alert('Feed Added!');
+                
 		vm.newFeedInput('');
 	};
 	
@@ -54,13 +79,16 @@ function SimpleWebClientViewModel() {
 				
 		$.ajax({
 		    url: urlBase + 'user/' + vm.user().username,
-			dataType: "application/json",
+			dataType: "json",
 			type: 'PUT',
 			cache: false,
-			data: json
+			data: json,
+            success: function (data) {
+                vm.feeds([]);
+                getUserInfo();
+			}
 		});
 		
-		alert('Feed Removed!!');
 	};
 	
 	
@@ -108,8 +136,8 @@ function SimpleWebClientViewModel() {
 					feeds: data.feeds,
 					id: data._id
 				});
-				
-				getFeedData();
+                
+                getFeedData();                      
 			}
 		});
 	}
