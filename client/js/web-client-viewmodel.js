@@ -41,7 +41,7 @@ function SimpleWebClientViewModel() {
 			cache: false,
 			data: json
 		});
-		
+        
 		alert('Feed Added!');
 		vm.newFeedInput('');
 	};
@@ -113,7 +113,7 @@ function SimpleWebClientViewModel() {
 			}
 		});
 	}
-	
+    
 	function toTitleCase(str)
 	{
 		return str.replace(/\w\S*/g, function(txt){
