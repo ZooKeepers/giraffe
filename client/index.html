@@ -42,9 +42,10 @@
 					<div class="panel-group" id="accordion">
 						<div style="margin-bottom: 0px" data-bind="foreach: feeds">
                             <a><h5>
-                                <span data-toggle="tooltip" data-placement="top" title="Remove Feed" class="glyphicon glyphicon-minus" data-bind="click: $root.removeFeed"></span>
                                 <span data-bind="click: $root.changeFeed, text: ' ' + title"></span>
-                                <span class="text-muted pull-right"></span>
+                                <span class="text-muted pull-right">
+                                    <span data-toggle="tooltip" data-placement="top" style="color:red" title="Remove Feed" class="glyphicon glyphicon-minus-sign" data-bind="click: $root.removeFeed"></span>
+                                </span>
                             </h5></a>
 						</div>
 					</div>
