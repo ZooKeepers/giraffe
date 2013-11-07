@@ -373,5 +373,15 @@ function SimpleWebClientViewModel() {
 		});
 		
     });
+    
+    $('#myTab a[href="#login"]').click(function (e) {
+      e.preventDefault();
+      $(this).tab('show');
+    });
+    
+    $('#myTab a[href="#register"]').click(function (e) {
+      e.preventDefault();
+      $(this).tab('show');
+    })
 }($, window, document));
 
