@@ -106,18 +106,36 @@
 				</div>
 				<!-- Login Division -->
 				<div class="row" data-bind="visible: user().username == 'Login'">
-					<div style="padding-top: 22px;"></div>
-					<div class="container">
-					  <form class="form-signin" style="padding-top: 0px" data-bind="submit: attemptLogin">
-						<h3 style="margin-top: 5px">Please Login</h3>
-						<input type="text" class="form-control" placeholder="Username" data-bind="value: loginUsername">
-						<input type="password" class="form-control" placeholder="Password" data-bind="value: loginPassword">
-						<label class="checkbox">
-						  <input type="checkbox" value="remember-me"> Remember me <a class="pull-right" data-bind="click: registerAccount"> Register? </a>
-						</label>
-						<button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
-					  </form>
-					</div>
+                    <div style="padding-top: 22px;"></div>
+                    <div class="container">
+                        <ul class="nav nav-tabs" id="myTab">
+                            <li class="active"><a href="#login">Login</a></li>
+                            <li><a href="#register">Register Account</a></li>
+                        </ul>
+                        <div class="tab-content">
+                            <!--login tab-->
+                            <div class="tab-pane active" id="login">
+                              <form class="form-signin" style="padding-top: 0px" data-bind="submit: attemptLogin">
+                                <h3 style="margin-top: 5px">Please Login</h3>
+                                <input type="text" class="form-control" placeholder="Username" data-bind="value: loginUsername">
+                                <input type="password" class="form-control" placeholder="Password" data-bind="value: loginPassword">
+                                <label class="checkbox">
+                                  <input type="checkbox" value="remember-me"> Remember me
+                                </label>
+                                <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+                              </form>
+                            </div>
+                            <!--register tab-->
+                            <div class="tab-pane" id="register">
+                              <form class="form-signin" style="padding-top: 0px" data-bind="submit: registerAccount">
+                                <h3 style="margin-top: 5px">Register a new Account</h3>
+                                <input type="text" class="form-control" placeholder="Username" data-bind="value: loginUsername">
+                                <input type="password" class="form-control" placeholder="Password" data-bind="value: loginPassword">
+                                <button class="btn btn-lg btn-primary btn-block" type="submit">Register</button>
+                              </form>
+                            </div>
+                        </div>
+                    </div>
 				</div>
 				<!-- /Login Div -->
 				<div class="panel-group" id="artAcc" data-bind="foreach: displayedItems">
