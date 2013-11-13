@@ -23,6 +23,10 @@ function SimpleWebClientViewModel() {
 	vm.loginUsername = ko.observable();
 	vm.loginPassword = ko.observable();
 	
+    vm.curPass = ko.observable();
+    vm.newPass = ko.observable();
+    vm.reNewPass = ko.observable();
+    
 	vm.navbarTab = ko.observable(true);
 	vm.newFeedInput = ko.observable();
 	
@@ -363,6 +367,31 @@ function SimpleWebClientViewModel() {
 		});
 	}
 	
+    vm.changePassword = function (data, event) {
+    
+        if (vm.newPass() == vm.reNewPass()) { 
+            var json = {
+                            curPassword: vm.curPass(),
+                            newPassword: vm.newPass()
+                        };
+                        
+            $.ajax({
+                url: urlBase + 'user/' + vm.user().username,
+                dataType: "json",
+                type: 'PUT',
+                cache: false,
+                data: json,
+				error: function (data) {
+					console.log('test');
+				}
+            });
+        }
+        
+        vm.curPass('');
+        vm.newPass('');
+        vm.reNewPass('');
+    }
+    
 	// Utility functions for generating the href links for the Accordion Elements
     vm.genAccLink = function (str, comp) {
         return "#" + str + comp.replace(/\W/g, '');
