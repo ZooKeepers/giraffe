@@ -28,6 +28,24 @@ function SimpleWebClientViewModel() {
 	
 	vm.bookmarkedArray = ko.observableArray([]);
 	
+	vm.themes = ko.observableArray([
+		"zebra-theme.png",
+		"giraffe-theme.png",
+		"poke-theme.png",
+		"cheetah-theme.png"
+	]);
+	
+	vm.changeBackground = function (img) {
+	
+		$('#body').css('background-image', "url('./img/" + img + "')");
+		
+		/*
+		var loc = "'./img/" + img + "'";
+		document.body.style.backgroundImage="url(" + loc + ")";
+		var t = 10;
+		*/
+	};
+	
 	//bug: input not cleared on acceptance
 	vm.addFeed = function () {
 		var json = {

@@ -14,7 +14,7 @@
 	
   </head>
 
-  <body style="">
+  <body id="body" style="">
 	<div class="container">
 		<div class="row">
 			<div id="nav-bar-div" class="col-md-4" data-bind="visible: user().username != 'Login'">
@@ -44,7 +44,7 @@
                             <a><h5>
                                 <span data-bind="click: $root.changeFeed, text: ' ' + title"></span>
                                 <span class="text-muted pull-right">
-                                    <span data-toggle="tooltip" data-placement="top" style="color:red" title="Remove Feed" class="glyphicon glyphicon-minus-sign" data-bind="click: $root.removeFeed"></span>
+                                    <span data-toggle="tooltip" data-placement="top" title="Remove Feed" class="glyphicon glyphicon-minus-sign" data-bind="click: $root.removeFeed"></span>
                                 </span>
                             </h5></a>
 						</div>
@@ -69,10 +69,9 @@
 								<h4 class="modal-title" id="myModalLabel">Choose a Theme</h4>
 							  </div>
 							  <div class="modal-body text-center">
-								<img src="./img/zebra-theme.png" alt="..." class="img-circle">
-								<img src="./img/giraffe-theme.png" alt="..." class="img-circle">
-								<img src="./img/bear-theme.png" alt="..." class="img-circle">
-								<img src="./img/zebra-theme.png" alt="..." class="img-circle">
+								<div data-bind="foreach: themes">
+									<img data-bind="click: $root.changeBackground, attr: { src: './img/' + $data }" alt="..." class="img-circle">
+								</div>
 							  </div>
 							  <div class="modal-footer">
 								<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -89,6 +88,8 @@
 				<div style="padding-top: 22px;"></div>
 				<h3 style="margin-top: 5px; margin-bottom: 5px">About Giraffe-RSS</h3>
 					Giraffe RSS Reader is an RSS Reader that does a lot of things very well. It will allow you to easily organize and search up your RSS information and let you get your news easily and quickly.
+					<br><br>
+					Pokemon theme available thanks to <a href="http://kasumicr.deviantart.com/">KasumiCR</a>.
 			</div>
 			<div id="main-div" class="col-md-8">
 				<div class="row" data-bind="visible: user().username != 'Login'">
