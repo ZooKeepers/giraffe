@@ -342,9 +342,10 @@ function SimpleWebClientViewModel() {
 		    url: urlBase + 'articles/' + encodeURIComponent(feed.feed),
 			dataType: "json",
 			success: function (data) {
-				
+                
 				ko.utils.arrayForEach(data, function(item) {
 					vm.displayedItems.push({
+                        link: item.link,
 						feed: feed.title,
 						description: item.description,
 						title: item.title,
