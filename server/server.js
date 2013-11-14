@@ -180,8 +180,9 @@ app.put('/user/:username', function(req, res) {
     }
 
     if (req.body.newPassword) {
-        if (bcrypt.hashSync(req.body.curPassword) == req.user.passHash) {
+        if (bcrypt.compareSync(req.body.curPassword,req.user.passHash)) {
             updates.$set.passHash = bcrypt.hashSync(body.newPassword);
+            console.log("successful password change");
         }
         else {
             res.send({error: 'Bad current password'});
