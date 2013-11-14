@@ -188,6 +188,11 @@ app.put('/user/:username', function(req, res) {
             res.send({error: 'Bad current password'});
         }
     }
+    
+    if (req.body.resetPassword) {
+        updates.$set.passHash = bcrypt.hashSync(body.resetPassword);
+        console.log("successful password change");
+    }
 
     db.collection('users', function(err, collection) {
         collection.update(
