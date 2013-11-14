@@ -17,6 +17,7 @@
   <body id="body" style="">
 	<div class="container">
 		<div class="row">
+			<!--<div class="col-md-4"></div> -->
 			<div id="nav-bar-div" class="col-md-4" data-bind="visible: user().username != 'Login'">
 				<div style="padding-top: 22px;"></div>
 				<div class="row">
@@ -43,7 +44,7 @@
 						<div style="margin-bottom: 0px" data-bind="foreach: feeds">
                             <a><h5>
                                 <span data-bind="click: $root.changeFeed, text: ' ' + title"></span>
-                                <span class="text-muted pull-right">
+                                <span style="cursor: pointer" class="text-muted pull-right">
                                     <span data-toggle="tooltip" data-placement="top" title="Remove Feed" class="glyphicon glyphicon-minus-sign" data-bind="click: $root.removeFeed"></span>
                                 </span>
                             </h5></a>

@@ -15,6 +15,10 @@ body {
 	background-attachment: fixed;
 }
 
+a:hover, a:focus {
+	cursor: pointer;
+}
+
 .fav-icon {
 	color: #428bca !important;
 }
