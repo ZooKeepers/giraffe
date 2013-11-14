@@ -6,7 +6,7 @@ function RSSFeed(url, text, id) {
 
 function SimpleWebClientViewModel() {
     var vm = this;
-
+    
     var urlBase = "";
     if (window.location.hostname == "giraffe-rss.herokuapp.com") {
         urlBase = "https://giraffe-rss.herokuapp.com/"
@@ -16,7 +16,11 @@ function SimpleWebClientViewModel() {
 	vm.feeds = ko.observableArray([]);
 	vm.users = ko.observableArray([]);
 	
+    vm.newPass = ko.observable();
+    vm.reNewPass = ko.observable();
+    
     vm.getAllUsers = function() {
+    console.log('test');
 		$.ajax({
 		    url: urlBase + 'users',
 			dataType: "json",
@@ -26,12 +30,14 @@ function SimpleWebClientViewModel() {
                     console.log(item);
 					vm.users.push({
 						username: item.username,
-						id: item._id
+						id: item._id,
+                        feedNo: item.feeds.length
 					});
 				});
 			}
 		});
     }
+    $(document).ready(vm.getAllUsers);
     
     vm.deleteUser = function(username) {
         console.log(username);
@@ -45,8 +51,23 @@ function SimpleWebClientViewModel() {
 			}
 		});    }
     
-    vm.resetPassword = function() {
-        alert('Reset Password');
+    vm.resetPassword = function(username) {
+        if (vm.newPass() == vm.reNewPass()) { 
+            var json = {
+                            resetPassword: vm.newPass()
+                        };
+                        
+            $.ajax({
+                url: urlBase + 'user/' + username,
+                dataType: "json",
+                type: 'PUT',
+                cache: false,
+                data: json
+            });
+        }
+        
+        vm.newPass('');
+        vm.reNewPass('');
     }
     
     // Utility functions for generating the href links for the Accordion Elements

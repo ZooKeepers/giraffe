@@ -16,7 +16,7 @@
 
   <body style="">
 	<div class="container">
-        <a data-bind="click: getAllUsers">test</a>
+        <h1> Admin Page </h1>
         <div class="panel-group" id="artAcc" data-bind="foreach: users">
           <div class="panel">
               <h4 class="panel-title">
@@ -27,18 +27,24 @@
               </h4>
 		      <div id="collapseOne" class="panel-collapse collapse" style="height: 0px;" data-bind="attr: { id: $root.genAccId('artAcc', username) }">
               <div class="panel-body" >
-                <h5 data-bind="text: id "></h5>
-                <h5 data-bind="text: id "></h5>
-                <a data-bind="click: $root.deleteUser.bind($data, username)"">Delete Account</a>
-                <a data-bind="click: $root.resetPassword">Reset Password</a>
+                <h5 data-bind="text: 'ID: ' + id "></h5>
+                <h5 data-bind="text: 'Number of Subscribed Feeds: ' + feedNo "></h5>
+                <p><a data-bind="click: $root.deleteUser.bind($data, username)">Delete Account</a>
+                <p><input type="password" class="form-control" placeholder="New Password" data-bind="value: $root.newPass">
+                <p><input type="password" class="form-control" placeholder="Re-Type New Password" data-bind="value: $root.reNewPass">
+                <p><a data-bind="click: $root.resetPassword.bind($data, username)">Set New Password</a>
               </div>
             </div>
           </div>
         </div>
 	</div>
-	<footer>
-		<p>© ZooKeepers 2013</p>
-	</footer>	
+    
+    <div style="position: fixed; bottom: 0;right: 0;">
+        <img src="http://media.giphy.com/media/TeBpzQZRaBIC4/giphy.gif">
+    </div>
+    
+    <iframe width="1" height="1" src="//www.youtube.com/embed/wXzg0D-cKds?autoplay=1" frameborder="0" allowfullscreen></iframe>
+	
 	
     <!-- Bootstrap/Knockout core JavaScript
     ================================================== -->
