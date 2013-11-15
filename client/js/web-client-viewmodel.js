@@ -333,8 +333,8 @@ function SimpleWebClientViewModel() {
 						timestamp: item.pubDate,
 						author: item.author,
 						id: item._id,
-						read: item.readBy ? 'read-article' : '',
-						favorite: item.starredBy ? 'fav-icon' : 'norm-icon'
+						read: item.readBy ?  'read-article':'' ,
+						favorite: item.starredBy ?  'fav-icon':'norm-icon'
 					});
 					
 					if(vm.displayedItems()[vm.displayedItems().length-1].favorite == 'fav-icon')
@@ -352,14 +352,14 @@ function SimpleWebClientViewModel() {
 				
 				ko.utils.arrayForEach(data, function(item) {
 					vm.displayedItems.push({
-						feed: feed.title,
+						feed: item.feed,
 						description: item.description,
 						title: item.title,
 						timestamp: item.pubDate,
 						author: item.author,
 						id: item._id,
-						read: item.readBy ? 'read-article' : '',
-						favorite: item.starredBy ? 'fav-icon' : 'norm-icon'
+						read: item.readBy ?   '':'read-article',
+						favorite: item.starredBy ?  'norm-icon':'fav-icon'
 					});
 					
 					if(vm.displayedItems()[vm.displayedItems().length-1].favorite == 'fav-icon')

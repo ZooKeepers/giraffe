@@ -431,7 +431,7 @@ app.get('/articles/:url', function(req, res) {
         collection.find(
             query,
             filter
-            ).sort({sortDate:-1}, function(err, item) {
+            ).sort({pubDate:-1}, function(err, item) {
                 item.toArray(function(err, array) {
                     res.send(array);
                 });
