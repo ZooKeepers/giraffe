@@ -375,6 +375,7 @@ function SimpleWebClientViewModel() {
 				
 				ko.utils.arrayForEach(data, function(item) {
 					vm.displayedItems.push({
+                        link:item.link,
 						feed: item.feed,
 						description: item.description,
 						title: item.title,
