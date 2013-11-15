@@ -249,10 +249,10 @@ function SimpleWebClientViewModel() {
 		
 		vm.displayedItems([]);
 		vm.bookmarkedArray([]);
-		
-		ko.utils.arrayForEach(vm.feeds(), function(feed) {
+		getAllItems();
+		/*ko.utils.arrayForEach(vm.feeds(), function(feed) {
 			getFeedItems(feed);
-		});
+		});*/
 	};
 	
 	// Get information about the current feeds
@@ -356,8 +356,33 @@ function SimpleWebClientViewModel() {
 						timestamp: item.pubDate,
 						author: item.author,
 						id: item._id,
-						read: item.readBy ? 'read-article' : '',
-						favorite: item.starredBy ? 'fav-icon' : 'norm-icon'
+						read: item.readBy ?  'read-article':'' ,
+						favorite: item.starredBy ?  'fav-icon':'norm-icon'
+					});
+					
+					if(vm.displayedItems()[vm.displayedItems().length-1].favorite == 'fav-icon')
+						vm.bookmarkedArray.push(vm.displayedItems()[vm.displayedItems().length-1]);
+				});
+			}
+		});
+	}
+    //get item from all feeds
+    function getAllItems() {
+		$.ajax({
+		    url: urlBase + 'articles',
+			dataType: "json",
+			success: function (data) {
+				
+				ko.utils.arrayForEach(data, function(item) {
+					vm.displayedItems.push({
+						feed: item.feed,
+						description: item.description,
+						title: item.title,
+						timestamp: item.pubDate,
+						author: item.author,
+						id: item._id,
+						read: item.readBy ?   '':'read-article',
+						favorite: item.starredBy ?  'norm-icon':'fav-icon'
 					});
 					
 					if(vm.displayedItems()[vm.displayedItems().length-1].favorite == 'fav-icon')

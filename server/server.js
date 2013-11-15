@@ -226,6 +226,7 @@ app.get('/rss', function(req, res) {
     rss.parseRSS('http://rss.nytimes.com/services/xml/rss/nyt/HomePage.xml', function(err, obj) {
         //obj.rss.channel[0].item = 0;
         //res.send(obj.rss.channel[0].item[0]);
+        //console.log(typeof new Date(obj.rss.channel[0].item[0].pubDate[0]));
         res.send(obj);
     });
 });
@@ -270,11 +271,13 @@ function rssReload(res) {
                                     link: items[i].link[0],
                                     description: items[i].description[0],
                                     author: items[i]['dc:creator'] ? items[i]['dc:creator'][0] : "",
-                                    pubDate: items[i].pubDate[0],
+                                    //sortDate: new Date(items[i].pubDate[0]),
+                                    pubDate: new Date(items[i].pubDate[0]),
                                     readBy: [],
                                     starredBy: []
                                 };
-
+                               // console.log(items[i].pubDate[0]);
+                               // console.log(typeof toInsert.pubDate);
                                 articlesCollection.update({link: toInsert.link}, toInsert, {upsert: true}, function(err, result) {});
                             }
                         });
@@ -329,13 +332,83 @@ app.get('/feed/:url', function(req, res) {
 });
 app.get('/articles', function(req, res) {
     db.collection('articles', function(err, collection) {
-        collection.find(function(err, item) {
+        collection.find().sort({pubDate:-1},function(err, item) {
             item.toArray(function(err, array) {
                 res.send(array);
             });
         });
     });
 });
+app.get('/nextpage/:date', function(req, res) {
+    console.log("Date ", req.params.date);
+    var myDate= new Date(req.params.date);
+    var timestamp=Date.parse(req.params.date);
+    //console.log("Date", myDate);
+    //console.log("Timestamp", timestamp);
+    
+    //If no date valid date is provided, get the 10 newest articles
+    if(isNaN(timestamp))
+    {   console.log("invalid")
+        db.collection('articles', function(err, collection) {
+            collection.find().sort({pubDate:-1}).limit(10,function(err, item) {
+                item.toArray(function(err, array) {
+                    res.send(array);
+                });
+            });
+        });
+    }
+    //else get the 10 articles after the date given.
+    else
+    {   //2012-01-12T20:15:31Z"
+        var myDate= new Date(req.params.date);
+        db.collection('articles', function(err, collection) {
+            collection.find({"pubDate" : { $lte : myDate }}).sort({pubDate:-1,_id:-1}).limit(10,function(err, item) {
+                item.toArray(function(err, array) {
+                    res.send(array);
+                });
+            });
+        });
+        
+    }
+
+});
+
+app.get('/prevpage/:date', function(req, res) {
+    console.log("Date ", req.params.date);
+    var myDate= new Date(req.params.date);
+    var timestamp=Date.parse(req.params.date);
+    //console.log("Date", myDate);
+    //console.log("Timestamp", timestamp);
+    
+    //If no date valid date is provided, get the 10 newest articles
+    if(isNaN(timestamp))
+    {   console.log("invalid")
+        db.collection('articles', function(err, collection) {
+            collection.find().sort({pubDate:-1}).limit(10,function(err, item) {
+                item.toArray(function(err, array) {
+                    res.send(array.reverse());
+                });
+            });
+        });
+    }
+    //else get the 10 articles before the date given.
+    else
+    {   //Test case: 2012-01-12T20:15:31Z"
+        var myDate= new Date(req.params.date);
+        db.collection('articles', function(err, collection) {
+            //collection.find({"pubDate" : { $gt : myDate }},{"pubDate":{$in:myDate}/*,"_id":{$lt:id}*/}).sort({pubDate:1,_id:-1}).limit(10,function(err, item) {
+            collection.find({"pubDate" : { $gt : myDate }}).sort({pubDate:1,_id:-1}).limit(10,function(err, item) {
+                item.toArray(function(err, array) {
+                    res.send(array.reverse());
+                });
+            });
+        });
+        
+    }
+
+});
+
+
 app.get('/articles/:url', function(req, res) {
     console.log(req.params.url);
     var query = {
@@ -363,11 +436,13 @@ app.get('/articles/:url', function(req, res) {
         filter.readBy = 1;
         filter.starredBy = 1;
     }
+    //        collection.find().sort({pubDate:-1})
+
     db.collection('articles', function(err, collection) {
         collection.find(
             query,
             filter
-            , function(err, item) {
+            ).sort({pubDate:-1}, function(err, item) {
                 item.toArray(function(err, array) {
                     res.send(array);
                 });
