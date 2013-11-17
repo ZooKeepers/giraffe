@@ -339,6 +339,7 @@ app.get('/articles', function(req, res) {
         });
     });
 });
+
 app.get('/nextpage/:date', function(req, res) {
     console.log("Date ", req.params.date);
     var myDate= new Date(req.params.date);
@@ -408,6 +409,117 @@ app.get('/prevpage/:date', function(req, res) {
 
 });
 
+app.get('/todayNext/:date', function(req, res) {
+    console.log("Date ", req.params.date);
+    today= new Date();
+    today=new Date(today.getFullYear(),today.getMonth(),today.getDate());
+    var myDate= new Date(req.params.date);
+    var timestamp=Date.parse(req.params.date);
+    //console.log("Date", myDate);
+    //console.log("Timestamp", timestamp);
+    
+    //If no date valid date is provided, get the 10 newest articles
+    if(isNaN(timestamp))
+    {   console.log("Invalid Date")
+        db.collection('articles', function(err, collection) {
+            collection.find({"pubDate":{$gte:today}}).sort({pubDate:-1}).limit(10,function(err, item) {
+                item.toArray(function(err, array) {
+                    res.send(array);
+                });
+            });
+        });
+    }
+    //else get the 10 articles after the date given.
+    else
+    {   //2012-01-12T20:15:31Z"
+        var myDate= new Date(req.params.date);
+        db.collection('articles', function(err, collection) {
+            collection.find({"pubDate" : { $lte : myDate,$gte:today }}).sort({pubDate:-1}).limit(10,function(err, item) {
+                item.toArray(function(err, array) {
+                    res.send(array);
+                });
+            });
+        });
+        
+    }
+
+});
+
+app.get('/todayPrev/:date', function(req, res) {
+    console.log("Date ", req.params.date);
+    today= new Date();
+    today=new Date(today.getFullYear(),today.getMonth(),today.getDate());
+ 
+    //console.log("Today",today);
+    var myDate= new Date(req.params.date);
+    var timestamp=Date.parse(req.params.date);
+    //console.log("Date", myDate);
+    //console.log("Timestamp", timestamp);
+    
+    //If no date valid date is provided, get the 10 newest articles
+       if(isNaN(timestamp))
+    {   console.log("Invalid Date")
+        db.collection('articles', function(err, collection) {
+            collection.find({"pubDate":{$gte:today}}).sort({pubDate:-1}).limit(10,function(err, item) {
+                item.toArray(function(err, array) {
+                    res.send(array);
+                });
+            });
+        });
+    }
+
+    //else get the 10 articles before the date given.
+    else
+    {   //Test case: 2012-01-12T20:15:31Z"
+        var myDate= new Date(req.params.date);
+        db.collection('articles', function(err, collection) {
+            //collection.find({"pubDate" : { $gt : myDate }},{"pubDate":{$in:myDate}/*,"_id":{$lt:id}*/}).sort({pubDate:1,_id:-1}).limit(10,function(err, item) {
+            collection.find({"pubDate" : { $gt : myDate,$gte :today }}).sort({pubDate:1}).limit(10,function(err, item) {
+                item.toArray(function(err, array) {
+                    res.send(array.reverse());
+                });
+            });
+        });
+        
+    }
+
+});
+
+app.get('/recentlyNext/:date', function(req, res) {
+    console.log("Date ", req.params.date);
+    today= new Date();
+    today=new Date(today.getFullYear(),today.getMonth(),today.getDate());
+    var myDate= new Date(req.params.date);
+    var timestamp=Date.parse(req.params.date);
+    //console.log("Date", myDate);
+    //console.log("Timestamp", timestamp);
+    
+    //If no date valid date is provided, get the 10 newest articles
+    if(isNaN(timestamp))
+    {   console.log("invalid")
+        db.collection('articles', function(err, collection) {
+            collection.find({"pubDate":{$gte:today}}).sort({pubDate:-1}).limit(10,function(err, item) {
+                item.toArray(function(err, array) {
+                    res.send(array);
+                });
+            });
+        });
+    }
+    //else get the 10 articles after the date given.
+    else
+    {   //2012-01-12T20:15:31Z"
+        var myDate= new Date(req.params.date);
+        db.collection('articles', function(err, collection) {
+            collection.find({"pubDate" : { $lte : myDate,$gte:today }}).sort({pubDate:-1,_id:-1}).limit(10,function(err, item) {
+                item.toArray(function(err, array) {
+                    res.send(array);
+                });
+            });
+        });
+        
+    }
+
+});
 
 app.get('/articles/:url', function(req, res) {
     console.log(req.params.url);
