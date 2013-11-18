@@ -531,7 +531,7 @@ app.get('/todayPrev/:date', function(req, res) {
 
 });
 
-app.get('/recentNext/:date', function(req, res) {
+app.get('/recentNext/:date/:user', function(req, res) {
     console.log("Date ", req.params.date);
     dateRange= new Date();
     dateRange=new Date(dateRange.getFullYear(),dateRange.getMonth(),dateRange.getDate());
@@ -542,14 +542,38 @@ app.get('/recentNext/:date', function(req, res) {
     //If no date valid date is provided, get the 10 newest articles
     if(isNaN(timestamp))
     {
-        getLatestPage(res);
+        console.log("invalid")
+        db.collection('articles', function(err, collection) {
+            collection.find(
+            {
+                "readBy": {
+                    $elemMatch: {
+                        username:  req.params.user.trim()
+                        }
+                }
+            }).sort({pubDate:-1}).limit(10,function(err, item) {
+                item.toArray(function(err, array) {
+                    res.send(array);
+                });
+            });
+        });
     }
     //else get the 10 articles after the date given.
     else
     {   //2012-01-12T20:15:31Z"
+        console.log("User:", req.params.user);
         var myDate= new Date(req.params.date);
         db.collection('articles', function(err, collection) {
-            collection.find({"pubDate" : { $lte : myDate,$gte:dateRange }}).sort({pubDate:-1,_id:-1}).limit(10,function(err, item) {
+            collection.find(
+            {
+                "pubDate" : { $lte : myDate,$gte:dateRange },
+                "readBy": {
+                    $elemMatch: {
+                        username:  req.params.user.trim()
+                        }
+                }
+            
+            }).sort({pubDate:-1,_id:-1}).limit(10,function(err, item) {
                 item.toArray(function(err, array) {
                     res.send(array);
                 });
@@ -559,8 +583,8 @@ app.get('/recentNext/:date', function(req, res) {
     }
 
 });
-
-app.get('/recentPrev/:date', function(req, res) {
+//Takes in a date and user, returns 10 closest articles before the date read by the user.
+app.get('/recentPrev/:date/:user', function(req, res) {
     console.log("Date ", req.params.date);
     dateRange= new Date();
     dateRange=new Date(dateRange.getFullYear(),dateRange.getMonth(),dateRange.getDate());
@@ -571,16 +595,38 @@ app.get('/recentPrev/:date', function(req, res) {
     //If no date valid date is provided, get the 10 newest articles
     if(isNaN(timestamp))
     {
-        getLatestPage(res);
+        console.log("invalid")
+        db.collection('articles', function(err, collection) {
+            collection.find(
+            {
+                "readBy": {
+                    $elemMatch: {
+                        username:  req.params.user.trim()
+                        }
+                }
+            }).sort({pubDate:-1}).limit(10,function(err, item) {
+                item.toArray(function(err, array) {
+                    res.send(array);
+                });
+            });
+        });
     }
     //else get the 10 articles after the date given.
     else
     {   //2012-01-12T20:15:31Z"
         var myDate= new Date(req.params.date);
         db.collection('articles', function(err, collection) {
-            collection.find({"pubDate" : { $gt : myDate,$gte:dateRange }}).sort({pubDate:1,_id:-1}).limit(10,function(err, item) {
+            collection.find(
+            {
+                "pubDate" : { $gt : myDate,$gte:dateRange },
+                 "readBy": {
+                        $elemMatch: {
+                        username:  req.params.user.trim()
+                        }
+                }
+            }).sort({pubDate:1,_id:-1}).limit(10,function(err, item) {
                 item.toArray(function(err, array) {
-                    res.send(array);
+                    res.send(array.reverse());
                 });
             });
         });
