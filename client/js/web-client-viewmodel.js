@@ -378,11 +378,22 @@ function SimpleWebClientViewModel() {
 				ko.utils.arrayForEach(data, function(item) {
 					vm.displayedItems.push( new Item(feed, item) );
 					
-					if(vm.displayedItems()[vm.displayedItems().length-1].favorite() == 'fav-icon')
+					var bool = containsId(vm.bookmarkedArray(), vm.displayedItems()[vm.displayedItems().length-1]);
+					
+					if(vm.displayedItems()[vm.displayedItems().length-1].favorite() == 'fav-icon' && bool)
 						vm.bookmarkedArray.push(vm.displayedItems()[vm.displayedItems().length-1]);
 				});
 			}
 		});
+	}
+	
+	function containsId(bookmarkArray, lastItem) {
+		var ret = true;
+		ko.utils.arrayForEach(bookmarkArray, function(booked) {
+			if(booked.id == lastItem.id)
+				ret = false;
+		});
+		return ret;
 	}
 	
     vm.changePassword = function (data, event) {
