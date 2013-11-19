@@ -4,6 +4,25 @@ function RSSFeed(url, text, id) {
 	this.id = id;
 }
 
+function Feed(data) {
+	
+}
+
+function Item(feed, item) {
+	this.link = item.link;
+	this.feed = feed.title;
+	this.description = item.description;
+	this.timestamp = item.pubDate;
+	this.author = item.author;
+	this.id = item._id;
+	
+	this.title = item.title.length < 75 ? item.title : item.title.substring(0, 70) + '...';
+	
+	
+	this.read = ko.observable(item.readBy ?  'read-article' : '' );
+	this.favorite = ko.observable(item.starredBy ?  'fav-icon': 'norm-icon');
+}
+
 function SimpleWebClientViewModel() {
     var vm = this;
 
@@ -40,14 +59,7 @@ function SimpleWebClientViewModel() {
 	]);
 	
 	vm.changeBackground = function (img) {
-	
 		$('#body').css('background-image', "url('./img/" + img + "')");
-		
-		/*
-		var loc = "'./img/" + img + "'";
-		document.body.style.backgroundImage="url(" + loc + ")";
-		var t = 10;
-		*/
 	};
 	
 	//bug: input not cleared on acceptance
@@ -249,10 +261,10 @@ function SimpleWebClientViewModel() {
 		
 		vm.displayedItems([]);
 		vm.bookmarkedArray([]);
-		getAllItems();
-		/*ko.utils.arrayForEach(vm.feeds(), function(feed) {
+		//getAllItems();
+		ko.utils.arrayForEach(vm.feeds(), function(feed) {
 			getFeedItems(feed);
-		});*/
+		});
 	};
 	
 	// Get information about the current feeds
@@ -280,12 +292,28 @@ function SimpleWebClientViewModel() {
 	
 	vm.markAsRead = function(data, event) {
 		var element = event.target.parentElement.parentElement;
-		
 		element.style.backgroundColor = 'rgba(255, 255, 255, 1)';
 		
-		data.read = 'read-artcile';
+		data.read('read-artcile');
 		var json = {
 						addRead: [{ _id: data.id }]
+					};
+		$.ajax({
+		    url: urlBase + 'articles',
+			dataType: "application/json",
+			type: 'PUT',
+			cache: false,
+			data: json
+		});
+	};
+	
+	vm.markAsUnread = function(data, event) {
+		var element = event.target.parentElement.parentElement;
+		element.style.backgroundColor = 'rgba(255, 255, 255, 0)';
+		
+		data.read('');
+		var json = {
+						removeRead: [{ _id: data.id }]
 					};
 		$.ajax({
 		    url: urlBase + 'articles',
@@ -305,8 +333,8 @@ function SimpleWebClientViewModel() {
 	vm.markAsFav = function(data, event) {
 		var element = event.target;
 		
-		if (data.favorite == 'fav-icon') {
-			data.favorite = '';
+		if (data.favorite() == 'fav-icon') {
+			data.favorite('');
 			$(element).addClass('norm-icon');
 			$(element).removeClass('fav-icon');
 			
@@ -323,7 +351,7 @@ function SimpleWebClientViewModel() {
 			});
 		}
 		else {
-			data.favorite = 'fav-icon';
+			data.favorite('fav-icon');
 			$(element).removeClass('norm-icon');
 			$(element).addClass('fav-icon');
 			
@@ -348,45 +376,9 @@ function SimpleWebClientViewModel() {
 			success: function (data) {
                 
 				ko.utils.arrayForEach(data, function(item) {
-					vm.displayedItems.push({
-                        link: item.link,
-						feed: feed.title,
-						description: item.description,
-						title: item.title,
-						timestamp: item.pubDate,
-						author: item.author,
-						id: item._id,
-						read: item.readBy ?  'read-article':'' ,
-						favorite: item.starredBy ?  'fav-icon':'norm-icon'
-					});
+					vm.displayedItems.push( new Item(feed, item) );
 					
-					if(vm.displayedItems()[vm.displayedItems().length-1].favorite == 'fav-icon')
-						vm.bookmarkedArray.push(vm.displayedItems()[vm.displayedItems().length-1]);
-				});
-			}
-		});
-	}
-    //get item from all feeds
-    function getAllItems() {
-		$.ajax({
-		    url: urlBase + 'articles',
-			dataType: "json",
-			success: function (data) {
-				
-				ko.utils.arrayForEach(data, function(item) {
-					vm.displayedItems.push({
-                        link:item.link,
-						feed: item.feed,
-						description: item.description,
-						title: item.title,
-						timestamp: item.pubDate,
-						author: item.author,
-						id: item._id,
-						read: item.readBy ?   '':'read-article',
-						favorite: item.starredBy ?  'norm-icon':'fav-icon'
-					});
-					
-					if(vm.displayedItems()[vm.displayedItems().length-1].favorite == 'fav-icon')
+					if(vm.displayedItems()[vm.displayedItems().length-1].favorite() == 'fav-icon')
 						vm.bookmarkedArray.push(vm.displayedItems()[vm.displayedItems().length-1]);
 				});
 			}
@@ -447,6 +439,20 @@ function SimpleWebClientViewModel() {
 		});
 		
     });
+	
+	/*
+	$(document).ready(function(){ 
+		document.oncontextmenu = function() {return false;};
+
+		$(document).mousedown(function(e){ 
+			if( e.button == 2 ) { 
+				alert('Right mouse button!'); 
+				return false; 
+			} 
+			return true; 
+		}); 
+	});
+	*/
     
     $('#myTab a[href="#login"]').click(function (e) {
       e.preventDefault();

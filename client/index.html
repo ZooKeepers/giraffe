@@ -148,6 +148,7 @@
 						<a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#artAcc" 
 							data-bind="click: $root.markAsRead, text: title, attr: { href: $root.genAccLink('artAcc', title)}">
 						</a>
+						<span class="text-muted glyphicon glyphicon-envelope pull-right" data-bind="visible: read, click: $root.markAsUnread"> </span>
 					  </h4>
 					<div id="collapseOne" class="panel-collapse collapse" style="height: 0px;" data-bind="attr: { id: $root.genAccId('artAcc', title) }">
 					  <div class="panel-body" >
