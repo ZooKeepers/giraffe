@@ -34,17 +34,6 @@ var job = new cronJob({
 db.open(function(err, db) {
     if (!err) {
         console.log("Connected to 'feaderdb' database");
-        db.collection('users', {strict:true}, function(err, collection) {
-            if (!err) collection.remove();
-            db.collection('articles', {strict:true}, function(err, collection) {
-                //populateDB();
-                if (!err) collection.remove();
-                db.collection('feeds', {strict:true}, function(err, collection) {
-                    if (!err) collection.remove();
-                    populateDB();
-                });
-            });
-        });
     }
 });
 
@@ -94,6 +83,22 @@ passport.deserializeUser(function(username, done) {
     db.collection('users', function(err, collection) {
         collection.findOne({'username': username}, function(err, item) {
             done(err, item);
+        });
+    });
+});
+
+app.get('/reset', function(req, res) {
+    db.collection('users', {strict:true}, function(err, collection) {
+        if (!err) collection.remove();
+        db.collection('articles', {strict:true}, function(err, collection) {
+            //populateDB();
+            if (!err) collection.remove();
+            db.collection('feeds', {strict:true}, function(err, collection) {
+                if (!err) collection.remove();
+                populateDB();
+
+                res.send({success: true});
+            });
         });
     });
 });
