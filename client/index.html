@@ -60,28 +60,7 @@
 					</div>	
 					<h5>.</h5>
 						<a><h5 style="padding-left: 18px;">Recently Read</h5></a>
-						<a ><h5 style="padding-left: 18px;">Themes</h5></a>
-						
-						<!-- Modal
-						<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-						  <div class="modal-dialog">
-							<div class="modal-content">
-							  <div class="modal-header">
-								<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-								<h4 class="modal-title" id="myModalLabel">Choose a Theme</h4>
-							  </div>
-							  <div class="modal-body text-center">
-								<div data-bind="foreach: themes">
-									<img data-bind="click: $root.changeBackground, attr: { src: './img/' + $data }" alt="..." class="img-circle">
-								</div>
-							  </div>
-							  <div class="modal-footer">
-								<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-								<button type="button" class="btn btn-primary" data-dismiss="modal">Save changes</button>
-							  </div>
-							</div>
-						  </div>
-						</div> -->
+						<h5 data-toggle="modal" data-target="#myModal" style="padding-left: 18px;"><a>Themes</a></h5>
 						<a href="mailto:someone@example.com"><h5 style="padding-left: 18px;">Contact Us</h5></a>
 					<h5>.</h5>
 				</div>
@@ -165,6 +144,27 @@
 				</div>
 			</div>
 		</div>
+	</div>
+	
+	<!-- Modal -->
+	<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	  <div class="modal-dialog">
+		<div class="modal-content">
+		  <div class="modal-header">
+			<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+			<h4 class="modal-title" id="myModalLabel">Choose a Theme</h4>
+		  </div>
+		  <div class="modal-body text-center">
+			<div data-bind="foreach: themes">
+				<img data-bind="click: $root.changeBackground, attr: { src: './img/' + $data }" alt="..." class="img-circle">
+			</div>
+		  </div>
+		  <div class="modal-footer">
+			<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+			<button type="button" class="btn btn-primary" data-dismiss="modal">Save changes</button>
+		  </div>
+		</div>
+	  </div>
 	</div>
 	
     <div class="modal fade" id="settingsModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
