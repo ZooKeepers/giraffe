@@ -7,6 +7,7 @@ var express = require('express'),
     passport = require('passport'),
     LocalStrategy = require('passport-local').Strategy,
     bcrypt = require('bcrypt-nodejs');
+var MongoStore = require('connect-mongo')(express);
 
 var app = express();
 
@@ -34,17 +35,6 @@ var job = new cronJob({
 db.open(function(err, db) {
     if (!err) {
         console.log("Connected to 'feaderdb' database");
-        db.collection('users', {strict:true}, function(err, collection) {
-            if (!err) collection.remove();
-            db.collection('articles', {strict:true}, function(err, collection) {
-                //populateDB();
-                if (!err) collection.remove();
-                db.collection('feeds', {strict:true}, function(err, collection) {
-                    if (!err) collection.remove();
-                    populateDB();
-                });
-            });
-        });
     }
 });
 
@@ -52,7 +42,15 @@ app.configure(function() {
     app.use(express.static(path.join(__dirname, '..',  'client')));
     app.use(express.cookieParser());
     app.use(express.bodyParser());
-    app.use(express.session({ secret: 'I shot a man in Reno, just to watch him die' }));
+    app.use(express.session({
+        secret:'I shot a man in Reno, just to watch him die',
+        maxAge: new Date(Date.now() + 3600000), // one week?
+        store: new MongoStore(
+            {db: 'feaderdb'},
+            function(err){
+                console.log(err || 'connect-mongodb setup ok');
+            })
+    }));
     app.use(flash());
     app.use(passport.initialize());
     app.use(passport.session());
@@ -94,6 +92,22 @@ passport.deserializeUser(function(username, done) {
     db.collection('users', function(err, collection) {
         collection.findOne({'username': username}, function(err, item) {
             done(err, item);
+        });
+    });
+});
+
+app.get('/reset', function(req, res) {
+    db.collection('users', {strict:true}, function(err, collection) {
+        if (!err) collection.remove();
+        db.collection('articles', {strict:true}, function(err, collection) {
+            //populateDB();
+            if (!err) collection.remove();
+            db.collection('feeds', {strict:true}, function(err, collection) {
+                if (!err) collection.remove();
+                populateDB();
+
+                res.send({success: true});
+            });
         });
     });
 });

@@ -18,7 +18,7 @@
 	<div class="container">
 		<div class="row">
 			<!--<div class="col-md-4"></div> -->
-			<div id="nav-bar-div" class="col-md-4" data-bind="visible: user().username != 'Login'">
+			<div id="nav-bar-div" class="col-md-3" style="position: fixed" data-bind="visible: user().username != 'Login'">
 				<div style="padding-top: 22px;"></div>
 				<div class="row">
 					<ul class="nav nav-tabs">
@@ -60,32 +60,12 @@
 					</div>	
 					<h5>.</h5>
 						<a data-bind="click: showRecentFeeds"><h5 style="padding-left: 18px;">Recently Read</h5></a>
-						<a data-toggle="modal" data-target="#myModal"><h5 style="padding-left: 18px;">Themes</h5></a>
-						<!-- Modal -->
-						<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-						  <div class="modal-dialog">
-							<div class="modal-content">
-							  <div class="modal-header">
-								<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-								<h4 class="modal-title" id="myModalLabel">Choose a Theme</h4>
-							  </div>
-							  <div class="modal-body text-center">
-								<div data-bind="foreach: themes">
-									<img data-bind="click: $root.changeBackground, attr: { src: './img/' + $data }" alt="..." class="img-circle">
-								</div>
-							  </div>
-							  <div class="modal-footer">
-								<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-								<button type="button" class="btn btn-primary" data-dismiss="modal">Save changes</button>
-							  </div>
-							</div><!-- /.modal-content -->
-						  </div><!-- /.modal-dialog -->
-						</div><!-- /.modal -->
+						<h5 data-toggle="modal" data-target="#myModal" style="padding-left: 18px;"><a>Themes</a></h5>
 						<a href="mailto:someone@example.com"><h5 style="padding-left: 18px;">Contact Us</h5></a>
 					<h5>.</h5>
 				</div>
 			</div>
-			<div id="about-div" class="col-md-4" data-bind="visible: user().username == 'Login'">
+			<div id="about-div" class="col-md-4" style="position: fixed" data-bind="visible: user().username == 'Login'">
 				<div style="padding-top: 22px;"></div>
                 <img src="./img/giraffe_logo.png">
 				<h3 style="margin-top: 5px; margin-bottom: 5px">About Giraffe-RSS</h3>
@@ -93,7 +73,7 @@
 					<br><br>
 					Pokemon theme available thanks to <a href="http://kasumicr.deviantart.com/">KasumiCR</a>.
 			</div>
-			<div id="main-div" class="col-md-8">
+			<div id="main-div" class="col-md-offset-4 col-md-8">
 				<div class="row" data-bind="visible: user().username != 'Login'">
 					<div class="col-md-5">
 						<span><h3 style="margin-bottom: 0px;" data-bind="text: titleDisplayLine"></h3></span>
@@ -141,6 +121,7 @@
                     </div>
 				</div>
 				<!-- /Login Div -->
+				<div style="padding-top: 12px"></div>
 				<div class="panel-group" id="artAcc" data-bind="foreach: displayedItems">
 				  <div class="panel">
 					  <h4 class="panel-title" data-bind="css: read">
@@ -148,6 +129,7 @@
 						<a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#artAcc" 
 							data-bind="click: $root.markAsRead, text: title, attr: { href: $root.genAccLink('artAcc', title)}">
 						</a>
+						<span class="text-muted glyphicon glyphicon-envelope pull-right" data-bind="visible: read, click: $root.markAsUnread"> </span>
 					  </h4>
 					<div id="collapseOne" class="panel-collapse collapse" style="height: 0px;" data-bind="attr: { id: $root.genAccId('artAcc', title) }">
 					  <div class="panel-body" >
@@ -164,6 +146,27 @@
             <button  data-bind="click:showPrevPage" >Prev</button>
             </div>
 		</div>
+	</div>
+	
+	<!-- Modal -->
+	<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	  <div class="modal-dialog">
+		<div class="modal-content">
+		  <div class="modal-header">
+			<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+			<h4 class="modal-title" id="myModalLabel">Choose a Theme</h4>
+		  </div>
+		  <div class="modal-body text-center">
+			<div data-bind="foreach: themes">
+				<img data-bind="click: $root.changeBackground, attr: { src: './img/' + $data }" alt="..." class="img-circle">
+			</div>
+		  </div>
+		  <div class="modal-footer">
+			<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+			<button type="button" class="btn btn-primary" data-dismiss="modal">Save changes</button>
+		  </div>
+		</div>
+	  </div>
 	</div>
 	
     <div class="modal fade" id="settingsModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">

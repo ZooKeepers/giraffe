@@ -4,6 +4,25 @@ function RSSFeed(url, text, id) {
 	this.id = id;
 }
 
+function Feed(data) {
+	
+}
+
+function Item(feed, item) {
+	this.link = item.link;
+	this.feed = feed.title;
+	this.description = item.description;
+	this.timestamp = item.pubDate;
+	this.author = item.author;
+	this.id = item._id;
+	
+	this.title = item.title.length < 75 ? item.title : item.title.substring(0, 70) + '...';
+	
+	
+	this.read = ko.observable(item.readBy ?  'read-article' : '' );
+	this.favorite = ko.observable(item.starredBy ?  'fav-icon': 'norm-icon');
+}
+
 function SimpleWebClientViewModel() {
     var vm = this;
     var firstDate =new Date();
@@ -42,14 +61,7 @@ function SimpleWebClientViewModel() {
 	]);
 	
 	vm.changeBackground = function (img) {
-	
 		$('#body').css('background-image', "url('./img/" + img + "')");
-		
-		/*
-		var loc = "'./img/" + img + "'";
-		document.body.style.backgroundImage="url(" + loc + ")";
-		var t = 10;
-		*/
 	};
 	
 	//bug: input not cleared on acceptance
@@ -252,7 +264,6 @@ function SimpleWebClientViewModel() {
 		vm.currentFeed('All Feeds');
 		vm.displayedItems([]);
 		vm.bookmarkedArray([]);
-		//getAllItems();
         getNextPage('nextpage/'+ firstDate);
     };
     
@@ -261,7 +272,6 @@ function SimpleWebClientViewModel() {
 		vm.currentFeed('Recently Read');
 		vm.displayedItems([]);
 		vm.bookmarkedArray([]);
-		//getAllItems();
         getNextPage('recentNext/'+ firstDate+'/'+vm.user().username);
     };
     
@@ -270,7 +280,6 @@ function SimpleWebClientViewModel() {
 		vm.currentFeed('Todays Feeds');
 		vm.displayedItems([]);
 		vm.bookmarkedArray([]);
-		//getAllItems();
         getNextPage('todayNext/'+ firstDate);
 		
 	};
@@ -283,7 +292,6 @@ function SimpleWebClientViewModel() {
         //console.log(feedState);
 		vm.displayedItems([]);
 		vm.bookmarkedArray([]);
-		//getAllItems();
         getNextPage('nextpage/'+ firstDate+'/'+feedState);
 		
 	};
@@ -292,7 +300,6 @@ function SimpleWebClientViewModel() {
 		vm.currentFeed('Bookmarked');
 		vm.displayedItems([]);
 		vm.bookmarkedArray([]);
-		//getAllItems();
         getNextPage('bookmarkNext/'+ firstDate+'/'+vm.user().username);
     };
 
@@ -302,7 +309,6 @@ function SimpleWebClientViewModel() {
     vm.showNextPage = function () {
 		vm.displayedItems([]);
 		vm.bookmarkedArray([]);
-		//getAllItems();
         if(feedState=="all")
         {
             getNextPage('nextpage/'+ lastDate);
@@ -332,7 +338,6 @@ function SimpleWebClientViewModel() {
      vm.showPrevPage = function () {
 		vm.displayedItems([]);
 		vm.bookmarkedArray([]);
-		//getAllItems();
         if(feedState=="all")
         {
             getNextPage('prevpage/'+ firstDate);
@@ -354,9 +359,10 @@ function SimpleWebClientViewModel() {
             checkState(feedState);
             getNextPage('prevpage/'+firstDate+'/'+feedState);
         }
-        
+        };
 		
-	};
+		
+	
 
     
 	
@@ -384,15 +390,33 @@ function SimpleWebClientViewModel() {
         vm.showAllFeeds();
 
 	}
-	
 	vm.markAsRead = function(data, event) {
 		var element = event.target.parentElement.parentElement;
 		
 		element.style.backgroundColor = 'rgba(255, 255, 255, 1)';
 		
-		data.read = 'read-artcile';
+		data.read = 'read-articles';
 		var json = {
 						addRead: [{ _id: data.id }]
+					};
+		$.ajax({
+		    url: urlBase + 'articles',
+			dataType: "application/json",
+			type: 'PUT',
+			cache: false,
+			data: json
+		});
+	};
+	
+
+	
+	vm.markAsUnread = function(data, event) {
+		var element = event.target.parentElement.parentElement;
+		element.style.backgroundColor = 'rgba(255, 255, 255, 0)';
+		
+		data.read='';
+		var json = {
+						removeRead: [{ _id: data.id }]
 					};
 		$.ajax({
 		    url: urlBase + 'articles',
@@ -445,8 +469,7 @@ function SimpleWebClientViewModel() {
 				data: json
 			});
 		}
-	};
-	
+	};	
 	// Pull the items from a specific feed
 	function getFeedItems(feed) {
 		$.ajax({
@@ -454,19 +477,11 @@ function SimpleWebClientViewModel() {
 			dataType: "json",
 			success: function (data) {
 				ko.utils.arrayForEach(data, function(item) {
-					vm.displayedItems.push({
-                        link: item.link,
-						feed: feed.title,
-						description: item.description,
-						title: item.title,
-						timestamp: item.pubDate,
-						author: item.author,
-						id: item._id,
-						read: item.readBy ?  'read-article':'' ,
-						favorite: item.starredBy ?  'fav-icon':'norm-icon'
-					});
+					vm.displayedItems.push( new Item(feed, item) );
 					
-					if(vm.displayedItems()[vm.displayedItems().length-1].favorite == 'fav-icon')
+					var bool = containsId(vm.bookmarkedArray(), vm.displayedItems()[vm.displayedItems().length-1]);
+					
+					if(vm.displayedItems()[vm.displayedItems().length-1].favorite() == 'fav-icon' && bool)
 						vm.bookmarkedArray.push(vm.displayedItems()[vm.displayedItems().length-1]);
 				});
 			}
@@ -495,7 +510,16 @@ function SimpleWebClientViewModel() {
 						vm.bookmarkedArray.push(vm.displayedItems()[vm.displayedItems().length-1]);
 				});
 			}
+            });
+        }
+	
+	function containsId(bookmarkArray, lastItem) {
+		var ret = true;
+		ko.utils.arrayForEach(bookmarkArray, function(booked) {
+			if(booked.id == lastItem.id)
+				ret = false;
 		});
+		return ret;
 	}
 	
     
@@ -553,6 +577,7 @@ function SimpleWebClientViewModel() {
 					});
                     firstDate=data[0].pubDate;
                         lastDate=data[data.length-1].pubDate;
+                        //not sure what this accomplishes
 					if(vm.displayedItems()[vm.displayedItems().length-1].favorite == 'norm-icon')
 						vm.bookmarkedArray.push(vm.displayedItems()[vm.displayedItems().length-1]);
 				});
@@ -616,6 +641,20 @@ function SimpleWebClientViewModel() {
 		});
 		
     });
+	
+	/*
+	$(document).ready(function(){ 
+		document.oncontextmenu = function() {return false;};
+
+		$(document).mousedown(function(e){ 
+			if( e.button == 2 ) { 
+				alert('Right mouse button!'); 
+				return false; 
+			} 
+			return true; 
+		}); 
+	});
+	*/
     
     $('#myTab a[href="#login"]').click(function (e) {
       e.preventDefault();
