@@ -203,7 +203,9 @@ app.put('/user/:username', function(req, res) {
             console.log("successful password change");
         }
         else {
+            console.log('bad current password');
             res.send({error: 'Bad current password'});
+            return;
         }
     }
     

@@ -33,6 +33,8 @@ function SimpleWebClientViewModel() {
         urlBase = 'http://' + window.location.hostname + ':3000/';
     }
 	
+    $('#popupModal').modal({ show: false})
+    
 	vm.currentFeed = ko.observable('Giraffe RSS');
 	vm.user = ko.observable({ username: 'Login'	});
 	
@@ -46,11 +48,15 @@ function SimpleWebClientViewModel() {
     vm.newPass = ko.observable();
     vm.reNewPass = ko.observable();
     
+    vm.popupText = ko.observable();
+    
 	vm.navbarTab = ko.observable(true);
 	vm.newFeedInput = ko.observable();
 	
 	vm.bookmarkedArray = ko.observableArray([]);
 	
+    vm.settingsText =  ko.observable();
+    
 	vm.themes = ko.observableArray([
 		"zebra-theme.png",
 		"giraffe-theme.png",
@@ -196,7 +202,8 @@ function SimpleWebClientViewModel() {
 				console.log("Login successful: ", data);
 			},
 			error: function(data) {
-				console.log("Login failed: ", data);
+				vm.popupText('Wrong Username or Password');
+                $('#popupModal').modal('show');
 			}
 		});
 		
@@ -211,7 +218,7 @@ function SimpleWebClientViewModel() {
 		
 		var data = $.ajax({
 		    url: urlBase + 'user',
-			dataType: "application/x-www-form-urlencoded",
+			dataType: "json",
 			type: 'POST',
 			cache: false,
 			data: 'username=' + vm.loginUsername() + '&password=' + vm.loginPassword(),
@@ -220,9 +227,10 @@ function SimpleWebClientViewModel() {
 		if(vm.loginUsername() != '' 
 			&& vm.loginPassword() != '' 
 			&& typeof vm.loginPassword() != 'undefined' 
-			&& typeof vm.loginUsername() != 'undefined')
-			
-			alert('User account ' + vm.loginUsername() + ' created.\nYou may now login.');
+			&& typeof vm.loginUsername() != 'undefined') {
+                vm.popupText('User account ' + vm.loginUsername() + ' created.\nYou may now login.');
+                $('#popupModal').modal('show');
+            }
 		else
 			alert('Username or password was not sufficient.');
 			
@@ -404,6 +412,7 @@ function SimpleWebClientViewModel() {
 	
     vm.changePassword = function (data, event) {
     
+        vm.settingsText('');
         if (vm.newPass() == vm.reNewPass()) { 
             var json = {
                             curPassword: vm.curPass(),
@@ -416,10 +425,20 @@ function SimpleWebClientViewModel() {
                 type: 'PUT',
                 cache: false,
                 data: json,
-				error: function (data) {
-					console.log('test');
+				success: function (data) {
+                    if (data.error) {
+                        vm.settingsText("Current password incorrect.");
+                    }
+				},
+                error: function (data) {
+                    if (data.error) {
+                        vm.settingsText("Current password incorrect.");
+                    }
 				}
             });
+        }
+        else {
+            vm.settingsText("New Password retype does not match.");
         }
         
         vm.curPass('');

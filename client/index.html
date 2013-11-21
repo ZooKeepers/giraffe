@@ -180,8 +180,26 @@
               <p><input type="password"  class="form-control" placeholder="Current Password" data-bind="value: curPass">
               <p><input type="password" class="form-control" placeholder="New Password" data-bind="value: newPass">
               <p><input type="password" class="form-control" placeholder="Re-Type New Password" data-bind="value: reNewPass">
+              <p><h5 data-bind="text: settingsText"></h5>
               <p><button class="btn btn-default" type="button" data-bind="click: changePassword"> Submit </button>
             </div>	
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+          </div>
+        </div><!-- /.modal-content -->
+      </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+    
+    <div class="modal fade" id="popupModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <h4 class="modal-title" id="myModalLabel"></h4>
+          </div>
+          <div class="modal-body">
+            <h5 data-bind="text: popupText"></h5>
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
