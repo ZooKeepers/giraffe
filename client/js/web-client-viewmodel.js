@@ -188,10 +188,16 @@ function SimpleWebClientViewModel() {
 		
 		$.ajax({
 		    url: urlBase + 'login',
-			dataType: "application/x-www-form-urlencoded",
+			dataType: "json",
 			type: 'POST',
 			cache: false,
-			data: 'username=' + vm.loginUsername() + '&password=' + vm.loginPassword()
+			data: 'username=' + vm.loginUsername() + '&password=' + vm.loginPassword(),
+			success: function(data) {
+				console.log("Login successful: ", data);
+			},
+			error: function(data) {
+				console.log("Login failed: ", data);
+			}
 		});
 		
 		getUserInfo();

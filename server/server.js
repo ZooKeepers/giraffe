@@ -113,7 +113,10 @@ app.get('/reset', function(req, res) {
 });
 
 app.post('/login',
-    passport.authenticate('local', null)
+    passport.authenticate('local'),
+    function(req, res) {
+        res.send({success: true});
+    }
 );
 
 app.get('/login', function(req, res) {
