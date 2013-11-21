@@ -136,6 +136,7 @@ app.get('/logout', function(req, res) {
         res.send({error: "Not authenticated"})
     }
     req.logout();
+    req.session.destroy();
 });
 
 // Create new user
