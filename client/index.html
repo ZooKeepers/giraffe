@@ -33,8 +33,8 @@
 				</div>
 				<div class="row text-well container" data-bind="visible: navbarTab">
 					<h5>.</h5>
-					<a><h5><span class="glyphicon glyphicon-dashboard"> </span> Today</h5></a>
-					<a data-bind="click: showBookmarked"><h5><span class="glyphicon glyphicon-bookmark"> </span> Bookmarked</h5></a>
+					<a data-bind= "click: showTodayFeeds"><h5><span class="glyphicon glyphicon-dashboard"> </span> Today</h5></a>
+					<a data-bind="click: showNextBookmarkedFeeds"><h5><span class="glyphicon glyphicon-bookmark"> </span> Bookmarked</h5></a>
 					<h5>.</h5>
 					<a data-bind="click: showAllFeeds"><h5>
 						<span class="glyphicon glyphicon-align-justify"> </span> All Feeds
@@ -43,7 +43,7 @@
 					<div class="panel-group" id="accordion">
 						<div style="margin-bottom: 0px" data-bind="foreach: feeds">
                             <a><h5>
-                                <span data-bind="click: $root.changeFeed, text: ' ' + title"></span>
+                                <span data-bind="click: $root.showAFeed, text: ' ' + title"></span>
                                 <span style="cursor: pointer" class="text-muted pull-right">
                                     <span data-toggle="tooltip" data-placement="top" title="Remove Feed" class="glyphicon glyphicon-minus-sign" data-bind="click: $root.removeFeed"></span>
                                 </span>
@@ -59,7 +59,7 @@
 					  </span>
 					</div>	
 					<h5>.</h5>
-						<a><h5 style="padding-left: 18px;">Recently Read</h5></a>
+						<a data-bind="click: showRecentFeeds"><h5 style="padding-left: 18px;">Recently Read</h5></a>
 						<a data-toggle="modal" data-target="#myModal"><h5 style="padding-left: 18px;">Themes</h5></a>
 						<!-- Modal -->
 						<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
@@ -160,7 +160,9 @@
 					</div>
 				  </div>
 				</div>
-			</div>
+			<button  data-bind="click:showNextPage" >Next</button>
+            <button  data-bind="click:showPrevPage" >Prev</button>
+            </div>
 		</div>
 	</div>
 	

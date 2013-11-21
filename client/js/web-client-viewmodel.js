@@ -6,7 +6,9 @@ function RSSFeed(url, text, id) {
 
 function SimpleWebClientViewModel() {
     var vm = this;
-
+    var firstDate =new Date();
+    var lastDate=new Date();
+    var feedState="all";
     var urlBase = "";
     if (window.location.hostname == "giraffe-rss.herokuapp.com") {
         urlBase = "https://giraffe-rss.herokuapp.com/"
@@ -83,6 +85,7 @@ function SimpleWebClientViewModel() {
                         setTimeout(function() {
                             vm.feeds([]);
                             getFeedData();
+
                         },5000);                        
                     }
                 });                
@@ -159,7 +162,7 @@ function SimpleWebClientViewModel() {
 					id: data._id
 				});
                 
-                getFeedData();                      
+                getFeedData();
 			}
 		});
 	}
@@ -237,7 +240,7 @@ function SimpleWebClientViewModel() {
 	// bug: requeries atm, maybe cache instead?
 	vm.changeFeed = function (feed) {
 		vm.currentFeed(feed.title);
-		
+		feedState=feed.feed;
 		vm.displayedItems([]);
 		getFeedItems(feed);
 	};
@@ -245,15 +248,117 @@ function SimpleWebClientViewModel() {
 	// Get items for all feeds!
 	// big: requeries atm, maybe cache instead?
 	vm.showAllFeeds = function () {
+        checkState("all");
 		vm.currentFeed('All Feeds');
-		
 		vm.displayedItems([]);
 		vm.bookmarkedArray([]);
-		getAllItems();
-		/*ko.utils.arrayForEach(vm.feeds(), function(feed) {
-			getFeedItems(feed);
-		});*/
+		//getAllItems();
+        getNextPage('nextpage/'+ firstDate);
+    };
+    
+    vm.showRecentFeeds = function () {
+        checkState("recent");
+		vm.currentFeed('Recently Read');
+		vm.displayedItems([]);
+		vm.bookmarkedArray([]);
+		//getAllItems();
+        getNextPage('recentNext/'+ firstDate+'/'+vm.user().username);
+    };
+    
+    vm.showTodayFeeds = function () {
+        checkState("today");
+		vm.currentFeed('Todays Feeds');
+		vm.displayedItems([]);
+		vm.bookmarkedArray([]);
+		//getAllItems();
+        getNextPage('todayNext/'+ firstDate);
+		
 	};
+    vm.showAFeed= function (feed) {
+        //console.log('nextpage/'+ firstDate+'/'+feed);
+        vm.currentFeed(feed.title);
+        checkState(encodeURIComponent(feed.feed));
+          str='nextpage/'+ firstDate.toISOString()+'/'+feedState;
+        console.log("String: ", str);
+        //console.log(feedState);
+		vm.displayedItems([]);
+		vm.bookmarkedArray([]);
+		//getAllItems();
+        getNextPage('nextpage/'+ firstDate+'/'+feedState);
+		
+	};
+        vm.showNextBookmarkedFeeds = function () {
+        checkState("bookmark");
+		vm.currentFeed('Bookmarked');
+		vm.displayedItems([]);
+		vm.bookmarkedArray([]);
+		//getAllItems();
+        getNextPage('bookmarkNext/'+ firstDate+'/'+vm.user().username);
+    };
+
+    
+
+    
+    vm.showNextPage = function () {
+		vm.displayedItems([]);
+		vm.bookmarkedArray([]);
+		//getAllItems();
+        if(feedState=="all")
+        {
+            getNextPage('nextpage/'+ lastDate);
+        }
+        else if(feedState=="recent")
+        {
+            getNextPage('recentNext/'+ lastDate+'/'+vm.user().username);
+        }
+        else if(feedState=="today")
+        {
+            getNextPage('todayNext/'+ lastDate);
+        }
+        else if(feedState=="bookmark")
+        {
+           // console.log("Bookmark: ",'bookmarkNext/'+lastDate);
+            getNextPage('bookmarkNext/'+lastDate+'/'+vm.user().username);
+        }
+        else
+        {
+            checkState(feedState);
+            getNextPage('nextpage/'+lastDate+'/'+feedState);
+        }
+        
+		
+	};
+    
+     vm.showPrevPage = function () {
+		vm.displayedItems([]);
+		vm.bookmarkedArray([]);
+		//getAllItems();
+        if(feedState=="all")
+        {
+            getNextPage('prevpage/'+ firstDate);
+        }
+        else if(feedState=="recent")
+        {
+            getNextPage('recentPrev/'+ firstDate+'/'+vm.user().username);
+        }
+        else if(feedState=="today")
+        {
+            getNextPage('todayPrev/'+ firstDate);
+        }
+        else if(feedState=="bookmark")
+        {
+            getNextPage('bookmarkPrev/'+firstDate+'/'+vm.user().username);
+        }
+        else
+        {
+            checkState(feedState);
+            getNextPage('prevpage/'+firstDate+'/'+feedState);
+        }
+        
+		
+	};
+
+    
 	
 	// Get information about the current feeds
 	// -- Also pulls the items of that feed
@@ -272,10 +377,12 @@ function SimpleWebClientViewModel() {
 						id: data[0]._id
 					});
 					
-					getFeedItems(vm.feeds()[vm.feeds().length - 1]);
+					//getFeedItems(vm.feeds()[vm.feeds().length - 1]);
 				}
 			});
 		});
+        vm.showAllFeeds();
+
 	}
 	
 	vm.markAsRead = function(data, event) {
@@ -346,7 +453,6 @@ function SimpleWebClientViewModel() {
 		    url: urlBase + 'articles/' + encodeURIComponent(feed.feed),
 			dataType: "json",
 			success: function (data) {
-                
 				ko.utils.arrayForEach(data, function(item) {
 					vm.displayedItems.push({
                         link: item.link,
@@ -385,7 +491,6 @@ function SimpleWebClientViewModel() {
 						read: item.readBy ?   '':'read-article',
 						favorite: item.starredBy ?  'norm-icon':'fav-icon'
 					});
-					
 					if(vm.displayedItems()[vm.displayedItems().length-1].favorite == 'fav-icon')
 						vm.bookmarkedArray.push(vm.displayedItems()[vm.displayedItems().length-1]);
 				});
@@ -393,6 +498,70 @@ function SimpleWebClientViewModel() {
 		});
 	}
 	
+    
+    //checks state
+    function checkState(newState)
+    {
+        if(feedState!=newState)
+        {
+            feedState=newState;
+            d= new Date();
+            lastDate=new Date();
+            firstDate=new Date();
+        }
+    }
+    //retreives next page based on input string
+    //TODO edit to take in a user.
+    //Compute appropriate string based on user.
+    function getNextPage(str) {
+		$.ajax({
+		    url: urlBase + str,
+			dataType: "json",
+			success: function (data) {
+				ko.utils.arrayForEach(data, function(item) {
+                    var isRead='';
+                    var isStarred='norm-icon';
+                    //see if item is read
+                    for(var i=0;i<item.readBy.length;i++)
+                    {
+                        if(item.readBy[i].username==vm.user().username)
+                        {
+                            console.log("Read by: ", item.readBy[i].username);
+                            isRead='read-article';
+                        }
+                    }
+                    //see if item is favorited
+                    for(var i=0;i<item.starredBy.length;i++)
+                    {
+                        console.log("Starred By: ", item.starredBy[i].username);
+                        if(item.starredBy[i].username==vm.user().username)
+                        {
+                            console.log("Starred By ", item.starredBy[i].username);
+                            isStarred='fav-icon';
+                        }
+                    }
+                    vm.displayedItems.push({
+                        link:item.link,
+						feed: item.feed,
+						description: item.description,
+						title: item.title,
+						timestamp: item.pubDate,
+						author: item.author,
+						id: item._id,
+						read:isRead,
+						favorite: isStarred
+					});
+                    firstDate=data[0].pubDate;
+                        lastDate=data[data.length-1].pubDate;
+					if(vm.displayedItems()[vm.displayedItems().length-1].favorite == 'norm-icon')
+						vm.bookmarkedArray.push(vm.displayedItems()[vm.displayedItems().length-1]);
+				});
+			}
+		});
+        console.log("FirstDate ",firstDate);
+        console.log("LastDate ",lastDate);
+	}
+    
     vm.changePassword = function (data, event) {
     
         if (vm.newPass() == vm.reNewPass()) { 
