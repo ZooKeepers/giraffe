@@ -24,6 +24,7 @@ var job = new cronJob({
     cronTime: '0 */15 * * * *',
     onTick: function() {
         //call the RSS reload function
+        console.log("RELOADING RSS AT TIME: ", new Date());
         rssReload(null);
     },
     onComplete: function() {
