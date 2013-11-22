@@ -203,6 +203,7 @@ function SimpleWebClientViewModel() {
 			data: 'username=' + vm.loginUsername() + '&password=' + vm.loginPassword(),
 			success: function(data) {
 				console.log("Login successful: ", data);
+				getUserInfo();
 			},
 			error: function(data) {
 				vm.popupText('Wrong Username or Password');
@@ -210,7 +211,7 @@ function SimpleWebClientViewModel() {
 			}
 		});
 		
-		getUserInfo();
+		//getUserInfo();
 		
 		//Need way to alert failed login
 		vm.loginUsername('');
