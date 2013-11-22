@@ -94,7 +94,6 @@ a:hover, a:focus {
 
 .sidebar-nav-fixed {
      position:fixed;
-     top:60px;
      width:21.97%;
  }
 
@@ -106,6 +105,24 @@ a:hover, a:focus {
 
  @media (max-width: 979px) {
      .sidebar-nav-fixed {
+         position:static;
+        width: auto;
+     }
+ }
+
+ .sidebar-about-fixed {
+     position:fixed;
+     width:30%;
+ }
+
+ @media (max-width: 767px) {
+     .sidebar-about-fixed {
+         width:auto;
+     }
+ }
+
+ @media (max-width: 979px) {
+     .sidebar-about-fixed {
          position:static;
         width: auto;
      }
