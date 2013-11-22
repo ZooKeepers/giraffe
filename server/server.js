@@ -113,7 +113,10 @@ app.get('/reset', function(req, res) {
 });
 
 app.post('/login',
-    passport.authenticate('local', null)
+    passport.authenticate('local'),
+    function(req, res) {
+        res.send({success: true});
+    }
 );
 
 app.get('/login', function(req, res) {
@@ -136,6 +139,7 @@ app.get('/logout', function(req, res) {
         res.send({error: "Not authenticated"})
     }
     req.logout();
+    req.session.destroy();
 });
 
 // Create new user
@@ -199,7 +203,9 @@ app.put('/user/:username', function(req, res) {
             console.log("successful password change");
         }
         else {
+            console.log('bad current password');
             res.send({error: 'Bad current password'});
+            return;
         }
     }
     
