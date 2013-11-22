@@ -142,8 +142,11 @@
 					</div>
 				  </div>
 				</div>
-				<button  data-bind="click:showPrevPage, visible: user().username != 'Login'" >Prev</button>
-				<button  data-bind="click:showNextPage, visible: user().username != 'Login'" >Next</button>
+				<div data-bind="visible: user().username != 'Login'">
+					<button class="btn" style="margin: 10px;" data-bind="click:showPrevPage" >Prev</button>
+					<span>Page</span>
+					<button class="btn" style="margin: 10px;" data-bind="click:showNextPage" >Next</button>
+				</div>
             </div>
 		</div>
 	</div>
