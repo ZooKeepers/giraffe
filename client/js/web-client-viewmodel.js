@@ -211,8 +211,6 @@ function SimpleWebClientViewModel() {
 			}
 		});
 		
-		//getUserInfo();
-		
 		//Need way to alert failed login
 		vm.loginUsername('');
 		vm.loginPassword('');
@@ -410,7 +408,7 @@ function SimpleWebClientViewModel() {
 		
 		element.style.backgroundColor = 'rgba(255, 255, 255, 1)';
 		
-		data.read = 'read-articles';
+		data.read('read-articles');
 		var json = {
 						addRead: [{ _id: data.id }]
 					};
@@ -429,7 +427,7 @@ function SimpleWebClientViewModel() {
 		var element = event.target.parentElement.parentElement;
 		element.style.backgroundColor = 'rgba(255, 255, 255, 0)';
 		
-		data.read='';
+		data.read('');
 		var json = {
 						removeRead: [{ _id: data.id }]
 					};
@@ -510,18 +508,8 @@ function SimpleWebClientViewModel() {
 			success: function (data) {
 				
 				ko.utils.arrayForEach(data, function(item) {
-					vm.displayedItems.push({
-                        link:item.link,
-						feed: item.feed,
-						description: item.description,
-						title: item.title,
-						timestamp: item.pubDate,
-						author: item.author,
-						id: item._id,
-						read: item.readBy ?   '':'read-article',
-						favorite: item.starredBy ?  'norm-icon':'fav-icon'
-					});
-					if(vm.displayedItems()[vm.displayedItems().length-1].favorite == 'fav-icon')
+					vm.displayedItems.push(new Item(item, item.feed));
+					if(vm.displayedItems()[vm.displayedItems().length-1].favorite() == 'fav-icon')
 						vm.bookmarkedArray.push(vm.displayedItems()[vm.displayedItems().length-1]);
 				});
 			}
@@ -587,8 +575,8 @@ function SimpleWebClientViewModel() {
 						timestamp: item.pubDate,
 						author: item.author,
 						id: item._id,
-						read:isRead,
-						favorite: isStarred
+						read:ko.observable(isRead),
+						favorite: ko.observable(isStarred)
 					});
                     firstDate=data[0].pubDate;
                         lastDate=data[data.length-1].pubDate;
