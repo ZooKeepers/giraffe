@@ -94,7 +94,8 @@ a:hover, a:focus {
 
 .sidebar-nav-fixed {
      position:fixed;
-     width:21.97%;
+	width: 30%;
+	padding-left: 2%;
  }
 
  @media (max-width: 767px) {
