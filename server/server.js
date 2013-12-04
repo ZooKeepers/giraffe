@@ -9,6 +9,10 @@ var express = require('express'),
     bcrypt = require('bcrypt-nodejs');
 var MongoStore = require('connect-mongo')(express);
 
+var mongoUri= process.env.MONGOLAB_URI||'mongodb://heroku_app18429032:vlkr2be9re59tb7mjkigkdil1a@ds049538.mongolab.com:49538/heroku_app18429032';
+
+console.log("URI: "+mongoUri+"\n");
+
 var app = express();
 
 var Server = mongo.Server,
@@ -16,7 +20,11 @@ var Server = mongo.Server,
     BSON = mongo.BSONPure;
 var articlesPerPage=20;
 var server = new Server('localhost', 27017, {auto_reconnect: true});
-db = new Db('feaderdb', server);
+
+mongo.MongoClient.connect(mongoUri, function (err, db) {
+if(err) console.log("ERROR: "+err);
+if(!err)
+{
 
 //run every 15 mins
 var job = new cronJob({
@@ -33,11 +41,9 @@ var job = new cronJob({
     start: true
 });
 
-db.open(function(err, db) {
     if (!err) {
         console.log("Connected to 'feaderdb' database");
     }
-});
 
 app.configure(function() {
     app.use(express.static(path.join(__dirname, '..',  'client')));
@@ -99,12 +105,12 @@ passport.deserializeUser(function(username, done) {
 
 app.get('/reset', function(req, res) {
     db.collection('users', {strict:true}, function(err, collection) {
-        if (!err) collection.remove();
+        if (!err) collection.remove(function(err){if(err) console.log("ERROR REMOVING");});
         db.collection('articles', {strict:true}, function(err, collection) {
             //populateDB();
-            if (!err) collection.remove();
+            if (!err) collection.remove(function(err){if(err) console.log("ERROR REMOVING");});
             db.collection('feeds', {strict:true}, function(err, collection) {
-                if (!err) collection.remove();
+                if (!err) collection.remove(function(err){if(err) console.log("ERROR REMOVING");});
                 populateDB();
 
                 res.send({success: true});
@@ -292,7 +298,7 @@ function rssReload(res) {
                                     feed: feed,
                                     title: channel.title[0],
                                     description: channel.description[0]
-                                }
+                                },function(err){if(err) console.log("ERROR REMOVING");}
                             );
 
                             // Update articles
@@ -959,7 +965,7 @@ var populateDB = function() {
             collection.update(
                 {feed: defaultFeeds[f].url},
                 {feed: defaultFeeds[f].url},
-                {upsert: true}
+                {upsert: true},function(err){if(err) console.log("ERROR REMOVING");}
             );
         }
     });
@@ -970,7 +976,7 @@ var populateDB = function() {
         for (u in defaultUsers) {
             collection.update(
                 {username: defaultUsers[u].username},
-                updates
+                updates,function(err){if(err) console.log("ERROR REMOVING");}
             );
         }
     });
@@ -982,4 +988,10 @@ var populateDB = function() {
 var port = process.env.PORT || 3000;
 app.listen(port, function(){
 console.log("Listening on "+port);});
+}
+else
+{
+    console.log("ERROR"+err);
+}
+});
 
