@@ -187,6 +187,7 @@ app.put('/user/:username', function(req, res) {
                     {feed: req.body.addFeeds[f].url},
                     {feed: req.body.addFeeds[f].url},
                     {upsert: true}
+                    ,function(err){if(err) console.log("ERROR REMOVING");}
                 );
             }
             rssReload(res);
@@ -219,6 +220,7 @@ app.put('/user/:username', function(req, res) {
         collection.update(
             {username: req.param('username')},
             updates
+            ,function(err){if(err) console.log("ERROR REMOVING");}
         );
     });
 
@@ -896,13 +898,14 @@ app.put('/articles', function(req, res) {
                     collection.update(
                         {_id: mongo.ObjectID(req.body.addRead[r]._id)},
                         {$addToSet: {readBy: {username: req.user.username, date:new Date()}}} //TODO: Talk to dylan about making scalable.
-                    );
+                    ,function(err){if(err) console.log("ERROR REMOVING");});
                 }
 
                 for (s in req.body.addStarred) {
                     collection.update(
                         {_id: mongo.ObjectID(req.body.addStarred[s]._id)},
                         {$addToSet: {starredBy: {username: req.user.username}}}
+                        ,function(err){if(err) console.log("ERROR REMOVING");}
                     );
                 }
 
@@ -910,6 +913,7 @@ app.put('/articles', function(req, res) {
                     collection.update(
                         {_id: mongo.ObjectID(req.body.removeRead[r]._id)},
                         {$pull: {readBy: {username: req.user.username}}}
+                        ,function(err){if(err) console.log("ERROR REMOVING");}
                     );
                 }
 
@@ -917,6 +921,7 @@ app.put('/articles', function(req, res) {
                     collection.update(
                         {_id: mongo.ObjectID(req.body.removeStarred[s]._id)},
                         {$pull: {starredBy: {username: req.user.username}}}
+                        ,function(err){if(err) console.log("ERROR REMOVING");}
                     );
                 }
             });
