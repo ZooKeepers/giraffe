@@ -51,12 +51,7 @@ app.configure(function() {
     app.use(express.bodyParser());
     app.use(express.session({
         secret:'I shot a man in Reno, just to watch him die',
-        maxAge: new Date(Date.now() + 3600000), // one week?
-        store: new MongoStore(
-            {db: 'feaderdb'},
-            function(err){
-                console.log(err || 'connect-mongodb setup ok');
-            })
+        maxAge: new Date(Date.now() + 3600000) // one week?
     }));
     app.use(flash());
     app.use(passport.initialize());
