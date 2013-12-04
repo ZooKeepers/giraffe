@@ -7,7 +7,6 @@ var express = require('express'),
     passport = require('passport'),
     LocalStrategy = require('passport-local').Strategy,
     bcrypt = require('bcrypt-nodejs');
-var MongoStore = require('connect-mongo')(express);
 
 var mongoUri= process.env.MONGOLAB_URI||'mongodb://heroku_app18429032:vlkr2be9re59tb7mjkigkdil1a@ds049538.mongolab.com:49538/heroku_app18429032';
 
