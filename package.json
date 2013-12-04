@@ -11,7 +11,6 @@
         "passport": "x.x",
         "passport-local": "x.x",
         "bcrypt-nodejs": "x.x",
-        "connect-flash": "x.x",
-        "connect-mongo": "x.x"
+        "connect-flash": "x.x"
     }
 }
