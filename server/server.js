@@ -22,7 +22,7 @@ var articlesPerPage=20;
 var server = new Server('localhost', 27017, {auto_reconnect: true});
 
 mongo.MongoClient.connect(mongoUri, function (err, db) {
-if(err) console.log("ERROR: "+err);
+if(err) console.log("ERROR1: "+err);
 if(!err)
 {
 
