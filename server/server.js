@@ -153,7 +153,7 @@ app.post('/user', function(req, res) {
         username: username,
         feeds: [
             { url: 'http://rss.nytimes.com/services/xml/rss/nyt/HomePage.xml' },
-            { url: 'http://omnifictruthcube.tumblr.com/rss' },
+            { url: 'http://www.businessweek.com/feeds/most-popular.rss' },
             { url: 'http://feeds.theonion.com/theonion/daily' }
         ],
         passHash: bcrypt.hashSync(password)
@@ -954,7 +954,7 @@ var populateDB = function() {
 
     var defaultFeeds = [
         { url: 'http://rss.nytimes.com/services/xml/rss/nyt/HomePage.xml' },
-        { url: 'http://omnifictruthcube.tumblr.com/rss' },
+        { url: 'http://www.businessweek.com/feeds/most-popular.rss' },
         { url: 'http://feeds.theonion.com/theonion/daily' }
     ];
 
