@@ -18,7 +18,6 @@ function Item(feed, item) {
 	
 	this.title = item.title.length < 75 ? item.title : item.title.substring(0, 70) + '...';
 	
-	
 	this.read = ko.observable(item.readBy ?  'read-article' : '' );
 	this.favorite = ko.observable(item.starredBy ?  'fav-icon': 'norm-icon');
 }
@@ -152,7 +151,7 @@ function SimpleWebClientViewModel() {
 			if(vm.user().username == 'Login')
 				return 'Login in below';
 			
-			return '64 unread articles // ';
+			return 'Articles below ';
 	});
 	
 	vm.titleDisplayLine = ko.computed(function() {
