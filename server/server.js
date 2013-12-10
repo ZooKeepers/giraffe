@@ -7,6 +7,8 @@ var express = require('express'),
     passport = require('passport'),
     LocalStrategy = require('passport-local').Strategy,
     bcrypt = require('bcrypt-nodejs');
+var MongoStore = require('connect-mongo')(express);
+
 
 var mongoUri= process.env.MONGOLAB_URI||"mongodb://localhost:27017/feaderdb";
 
@@ -50,7 +52,13 @@ app.configure(function() {
     app.use(express.bodyParser());
     app.use(express.session({
         secret:'I shot a man in Reno, just to watch him die',
-        maxAge: new Date(Date.now() + 3600000) // one week?
+        maxAge: new Date(Date.now() + 3600000), // one week?
+         store: new MongoStore(
+             {
+              url: mongoUri},
+             function(err){
+                 console.log(err || 'connect-mongodb setup ok');
+             })
     }));
     app.use(flash());
     app.use(passport.initialize());
