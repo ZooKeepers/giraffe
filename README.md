@@ -38,6 +38,14 @@ To set up Giraffe on a local server:
 
 5. Go to web browser and navigate to localhost:3000
 
+Documentation
+-------------
+[Developer Documentation](https://github.com/ZooKeepers/giraffe/wiki/Developer-Documentation)
+
+[User Documentation](https://github.com/ZooKeepers/giraffe/wiki/User-Documentation)
+
+Heroku setup documentation is included in the file: `heroku_setup.txt`
+
 Appendix
 --------
 [Node.js Download Site](http://nodejs.org/)
