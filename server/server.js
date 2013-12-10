@@ -9,6 +9,11 @@ var express = require('express'),
     bcrypt = require('bcrypt-nodejs');
 var MongoStore = require('connect-mongo')(express);
 
+
+var mongoUri= process.env.MONGOLAB_URI||"mongodb://localhost:27017/feaderdb";
+
+console.log("URI: "+mongoUri+"\n");
+
 var app = express();
 
 var Server = mongo.Server,
@@ -16,7 +21,11 @@ var Server = mongo.Server,
     BSON = mongo.BSONPure;
 var articlesPerPage=20;
 var server = new Server('localhost', 27017, {auto_reconnect: true});
-db = new Db('feaderdb', server);
+
+mongo.MongoClient.connect(mongoUri, function (err, db) {
+if(err) console.log("ERROR1: "+err);
+if(!err)
+{
 
 //run every 15 mins
 var job = new cronJob({
@@ -33,11 +42,9 @@ var job = new cronJob({
     start: true
 });
 
-db.open(function(err, db) {
     if (!err) {
         console.log("Connected to 'feaderdb' database");
     }
-});
 
 app.configure(function() {
     app.use(express.static(path.join(__dirname, '..',  'client')));
@@ -46,11 +53,12 @@ app.configure(function() {
     app.use(express.session({
         secret:'I shot a man in Reno, just to watch him die',
         maxAge: new Date(Date.now() + 3600000), // one week?
-        store: new MongoStore(
-            {db: 'feaderdb'},
-            function(err){
-                console.log(err || 'connect-mongodb setup ok');
-            })
+         store: new MongoStore(
+             {
+              url: mongoUri},
+             function(err){
+                 console.log(err || 'connect-mongodb setup ok');
+             })
     }));
     app.use(flash());
     app.use(passport.initialize());
@@ -83,7 +91,7 @@ passport.use(new LocalStrategy(function(username, password, done) {
 passport.serializeUser(function(user, done) {
     console.log("Serializing: " + user.username);
     db.collection('users', function(err, collection) {
-        collection.update({'username': user.username}, user);
+        collection.update({'username': user.username}, user,function(err){if(err) console.log("ERROR REMOVING");});
         done(null, user.username);
     });
 });
@@ -99,12 +107,12 @@ passport.deserializeUser(function(username, done) {
 
 app.get('/reset', function(req, res) {
     db.collection('users', {strict:true}, function(err, collection) {
-        if (!err) collection.remove();
+        if (!err) collection.remove(function(err){if(err) console.log("ERROR REMOVING");});
         db.collection('articles', {strict:true}, function(err, collection) {
             //populateDB();
-            if (!err) collection.remove();
+            if (!err) collection.remove(function(err){if(err) console.log("ERROR REMOVING");});
             db.collection('feeds', {strict:true}, function(err, collection) {
-                if (!err) collection.remove();
+                if (!err) collection.remove(function(err){if(err) console.log("ERROR REMOVING");});
                 populateDB();
 
                 res.send({success: true});
@@ -187,6 +195,7 @@ app.put('/user/:username', function(req, res) {
                     {feed: req.body.addFeeds[f].url},
                     {feed: req.body.addFeeds[f].url},
                     {upsert: true}
+                    ,function(err){if(err) console.log("ERROR REMOVING");}
                 );
             }
             rssReload(res);
@@ -219,6 +228,7 @@ app.put('/user/:username', function(req, res) {
         collection.update(
             {username: req.param('username')},
             updates
+            ,function(err){if(err) console.log("ERROR REMOVING");}
         );
     });
 
@@ -292,7 +302,7 @@ function rssReload(res) {
                                     feed: feed,
                                     title: channel.title[0],
                                     description: channel.description[0]
-                                }
+                                },function(err){if(err) console.log("ERROR REMOVING");}
                             );
 
                             // Update articles
@@ -896,13 +906,14 @@ app.put('/articles', function(req, res) {
                     collection.update(
                         {_id: mongo.ObjectID(req.body.addRead[r]._id)},
                         {$addToSet: {readBy: {username: req.user.username, date:new Date()}}} //TODO: Talk to dylan about making scalable.
-                    );
+                    ,function(err){if(err) console.log("ERROR REMOVING");});
                 }
 
                 for (s in req.body.addStarred) {
                     collection.update(
                         {_id: mongo.ObjectID(req.body.addStarred[s]._id)},
                         {$addToSet: {starredBy: {username: req.user.username}}}
+                        ,function(err){if(err) console.log("ERROR REMOVING");}
                     );
                 }
 
@@ -910,6 +921,7 @@ app.put('/articles', function(req, res) {
                     collection.update(
                         {_id: mongo.ObjectID(req.body.removeRead[r]._id)},
                         {$pull: {readBy: {username: req.user.username}}}
+                        ,function(err){if(err) console.log("ERROR REMOVING");}
                     );
                 }
 
@@ -917,6 +929,7 @@ app.put('/articles', function(req, res) {
                     collection.update(
                         {_id: mongo.ObjectID(req.body.removeStarred[s]._id)},
                         {$pull: {starredBy: {username: req.user.username}}}
+                        ,function(err){if(err) console.log("ERROR REMOVING");}
                     );
                 }
             });
@@ -959,7 +972,7 @@ var populateDB = function() {
             collection.update(
                 {feed: defaultFeeds[f].url},
                 {feed: defaultFeeds[f].url},
-                {upsert: true}
+                {upsert: true},function(err){if(err) console.log("ERROR REMOVING");}
             );
         }
     });
@@ -970,7 +983,7 @@ var populateDB = function() {
         for (u in defaultUsers) {
             collection.update(
                 {username: defaultUsers[u].username},
-                updates
+                updates,function(err){if(err) console.log("ERROR REMOVING");}
             );
         }
     });
@@ -982,4 +995,10 @@ var populateDB = function() {
 var port = process.env.PORT || 3000;
 app.listen(port, function(){
 console.log("Listening on "+port);});
+}
+else
+{
+    console.log("ERROR"+err);
+}
+});
 
