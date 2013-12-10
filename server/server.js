@@ -8,7 +8,7 @@ var express = require('express'),
     LocalStrategy = require('passport-local').Strategy,
     bcrypt = require('bcrypt-nodejs');
 
-var mongoUri= process.env.MONGOLAB_URI||'mongodb://heroku_app18429032:vlkr2be9re59tb7mjkigkdil1a@ds049538.mongolab.com:49538/heroku_app18429032';
+var mongoUri= process.env.MONGOLAB_URI||"mongodb://localhost:27017/feaderdb";
 
 console.log("URI: "+mongoUri+"\n");
 
