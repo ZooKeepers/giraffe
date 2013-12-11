@@ -31,9 +31,12 @@ To set up Giraffe on a local server:
 
 4. **START NODE.JS**
 
-	In directory /server
+	In main repository directory
 	
         npm install
+        
+	In directory /server
+        
         node server.js
 
 5. Go to web browser and navigate to localhost:3000
